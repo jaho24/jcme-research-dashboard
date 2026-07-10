@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>京城机电产业研究与市场分析平台</title>
+<style>
+:root{
+  --blue-900:#0c2d6b;--blue-800:#13408f;--blue-700:#1a56b5;
+  --blue-600:#2563eb;--blue-500:#3b82f6;--blue-400:#60a5fa;
+  --blue-100:#dbeafe;--blue-50:#eff6ff;
+  --cyan:#06b6d4;--cyan-dark:#0891b2;
+  --slate-900:#0f172a;--slate-700:#334155;--slate-600:#475569;
+  --slate-500:#64748b;--slate-400:#94a3b8;--slate-300:#cbd5e1;
+  --slate-200:#e2e8f0;--slate-100:#f1f5f9;--slate-50:#f8fafc;
+  --border:#d9e2ef;--shadow:0 1px 4px rgba(15,45,107,.06);
+  --radius:10px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100vh}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  font-size:14px;line-height:1.6;color:var(--slate-600);background:var(--slate-50);
+}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+.site{max-width:1200px;margin:0 auto;padding:0 16px 48px}
+
+/* ===== Header ===== */
+.site-header{
+  position:relative;margin:0 -16px 0;padding:36px 24px 28px;
+  background:linear-gradient(135deg,#0a2558 0%,#13408f 45%,#1a56b5 100%);
+  overflow:hidden;text-align:center;
+}
+.site-header::before{
+  content:"";position:absolute;inset:0;opacity:.18;
+  background:
+    radial-gradient(circle at 20% 60%,rgba(96,165,250,.6) 0%,transparent 50%),
+    radial-gradient(circle at 80% 30%,rgba(6,182,212,.4) 0%,transparent 45%),
+    repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(255,255,255,.03) 20px,rgba(255,255,255,.03) 21px);
+  pointer-events:none;
+}
+.header-inner{position:relative;z-index:1}
+.header-title{
+  font-size:clamp(22px,4vw,32px);font-weight:700;color:#fff;
+  letter-spacing:2px;text-shadow:0 2px 8px rgba(0,0,0,.25);margin-bottom:18px;
+}
+.header-search{
+  display:inline-flex;align-items:stretch;max-width:420px;width:100%;
+  border-radius:4px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.2);
+}
+.header-search input{
+  flex:1;border:none;padding:10px 14px;font-size:13px;outline:none;min-width:0;
+}
+.header-search button{
+  border:none;background:var(--cyan);color:#fff;font-size:13px;font-weight:600;
+  padding:0 20px;white-space:nowrap;transition:background .15s;
+}
+.header-search button:hover{background:var(--cyan-dark)}
+
+/* ===== Ticker ===== */
+.ticker-bar{
+  display:flex;align-items:center;gap:12px;
+  background:var(--blue-50);border-bottom:1px solid var(--blue-100);
+  padding:8px 16px;margin:0 -16px 20px;font-size:13px;
+}
+.ticker-label{
+  flex-shrink:0;display:flex;align-items:center;gap:6px;
+  font-weight:700;color:var(--blue-700);white-space:nowrap;
+}
+.ticker-icon{
+  width:18px;height:18px;background:var(--blue-600);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+}
+.ticker-icon svg{width:10px;height:10px;fill:#fff}
+.ticker-track{flex:1;overflow:hidden;white-space:nowrap}
+.ticker-text{
+  display:inline-block;color:var(--slate-600);
+  animation:ticker 28s linear infinite;
+}
+.ticker-text a{color:inherit;transition:color .15s}
+.ticker-text a:hover{color:var(--blue-600);cursor:pointer}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ===== Layer sections ===== */
+.layer{margin-bottom:20px}
+.layer-bottom{
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:stretch;
+}
+
+/* ===== Section titles ===== */
+.sec-head{
+  display:flex;align-items:center;gap:8px;margin-bottom:12px;
+  font-size:15px;font-weight:700;color:var(--blue-800);
+}
+.sec-head .icon{
+  width:16px;height:16px;background:var(--blue-600);border-radius:2px;flex-shrink:0;
+}
+.sec-head .icon.diamond{
+  background:transparent;width:14px;height:14px;
+  border:2px solid var(--blue-500);transform:rotate(45deg);border-radius:1px;
+}
+
+/* ===== Clickable module overlay ===== */
+.module-link{
+  display:block;color:inherit;cursor:pointer;
+  transition:box-shadow .2s,transform .2s;
+}
+.module-link:hover{box-shadow:0 4px 20px rgba(37,99,235,.12)}
+.module-link:focus-visible{outline:2px solid var(--blue-600);outline-offset:2px}
+
+/* ===== Layer 1: 工业观察 ===== */
+.layer-observe{
+  display:grid;grid-template-columns:1fr 1fr;gap:16px;
+}
+.visual-block{
+  position:relative;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;
+  min-height:300px;background:var(--slate-900);
+}
+.visual-block img{width:100%;height:100%;object-fit:cover;display:block;min-height:300px}
+.visual-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(10,37,88,.75) 0%,rgba(26,86,181,.45) 100%);
+  display:flex;flex-direction:column;justify-content:flex-end;padding:20px;
+}
+.visual-tag{
+  font-size:11px;font-weight:600;color:rgba(255,255,255,.75);
+  letter-spacing:1px;margin-bottom:4px;
+}
+.visual-title{font-size:18px;font-weight:700;color:#fff;line-height:1.4}
+.visual-enter{
+  margin-top:10px;font-size:12px;font-weight:600;color:var(--cyan);
+  display:inline-flex;align-items:center;gap:4px;
+}
+
+.news-panel{
+  border:1px solid var(--border);border-radius:var(--radius);background:#fff;
+  box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden;
+}
+.news-tabs{
+  display:flex;border-bottom:1px solid var(--border);background:var(--slate-50);
+}
+.news-tab{
+  flex:1;appearance:none;border:none;background:transparent;
+  padding:10px 8px;font-size:13px;font-weight:600;color:var(--slate-500);
+  border-bottom:2px solid transparent;transition:all .15s;
+}
+.news-tab:hover{color:var(--blue-600)}
+.news-tab[aria-selected="true"]{
+  color:#fff;background:var(--blue-700);border-bottom-color:var(--blue-700);
+}
+.news-list{flex:1;padding:4px 0}
+.news-panel-link{
+  display:block;text-align:center;padding:10px;font-size:12px;font-weight:600;
+  color:var(--blue-600);border-top:1px solid var(--border);background:var(--slate-50);
+  transition:background .15s;
+}
+.news-panel-link:hover{background:var(--blue-50)}
+.news-item{
+  display:flex;align-items:flex-start;gap:8px;padding:10px 14px;
+  border-bottom:1px dashed var(--slate-200);font-size:13px;line-height:1.5;
+  color:inherit;text-decoration:none;transition:color .15s,background .15s;
+}
+.news-item:last-child{border-bottom:none}
+.news-item:hover{cursor:pointer;background:var(--blue-50)}
+.news-item:hover .news-title{color:var(--blue-600)}
+.news-tag{
+  flex-shrink:0;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;
+  margin-top:2px;
+}
+.tag-h2{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa}
+.tag-jc{background:#fefce8;color:#a16207;border:1px solid #fde68a}
+.tag-wl{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0}
+.tag-sz{background:#ecfeff;color:#0e7490;border:1px solid #a5f3fc}
+.tag-ny{background:var(--blue-50);color:var(--blue-700);border:1px solid var(--blue-100)}
+.tag-qy{background:#f5f3ff;color:#6d28d9;border:1px solid #ddd6fe}
+.news-title{
+  flex:1;color:var(--slate-700);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+
+/* ===== Layer 2: 主题报告 ===== */
+.articles-section{
+  border:1px solid var(--border);border-radius:var(--radius);background:#fff;
+  box-shadow:var(--shadow);padding:16px 18px;
+}
+.articles-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:0 32px;
+}
+.article-row{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:9px 0;border-bottom:1px dashed var(--slate-200);font-size:13px;
+}
+.article-row:last-child,.articles-grid .article-row:nth-last-child(2):nth-child(odd){border-bottom:none}
+.article-title{
+  flex:1;color:var(--slate-700);min-width:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.article-title::before{content:"◆ ";color:var(--blue-400);font-size:10px}
+.article-date{
+  flex-shrink:0;font-size:11px;color:var(--blue-700);font-family:Consolas,monospace;
+  background:var(--blue-50);border:1px solid var(--blue-100);padding:2px 8px;border-radius:3px;
+}
+
+/* ===== Layer 3: 趋势 + 竞争 ===== */
+.chart-panel,.compete-panel{
+  min-width:0;border:1px solid var(--border);border-radius:var(--radius);background:#fff;
+  box-shadow:var(--shadow);padding:16px 18px;display:flex;flex-direction:column;min-height:420px;
+  transition:box-shadow .2s;
+}
+.panel-head-row{
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;
+}
+.panel-head-row .sec-head{margin-bottom:0}
+.goto-badge{
+  font-size:11px;font-weight:600;color:var(--blue-600);
+  padding:3px 10px;border-radius:4px;background:var(--blue-50);border:1px solid var(--blue-100);
+}
+.sample-badge{
+  font-size:10px;font-weight:600;padding:2px 7px;border-radius:3px;
+  background:var(--slate-100);color:var(--slate-500);border:1px solid var(--slate-200);
+}
+
+/* ===== 行业趋势 · 美化 ===== */
+.trend-tabs{
+  display:inline-flex;gap:4px;margin-bottom:14px;padding:3px;
+  background:var(--slate-100);border-radius:8px;
+}
+.trend-tab{
+  appearance:none;border:none;background:transparent;
+  padding:7px 18px;font-size:13px;font-weight:600;color:var(--slate-500);
+  border-radius:6px;transition:all .2s;
+}
+.trend-tab:hover{color:var(--blue-600);background:rgba(255,255,255,.6)}
+.trend-tab[aria-selected="true"]{
+  color:#fff;background:linear-gradient(135deg,var(--blue-700),var(--blue-600));
+  box-shadow:0 2px 8px rgba(37,99,235,.25);
+}
+
+.trend-kpi-row{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;
+}
+.trend-kpi{
+  position:relative;background:linear-gradient(135deg,#fff 0%,var(--blue-50) 100%);
+  border:1px solid var(--blue-100);border-radius:8px;
+  padding:12px 14px;overflow:hidden;
+  transition:transform .2s,box-shadow .2s;
+}
+.trend-kpi::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:linear-gradient(180deg,var(--blue-600),var(--cyan));border-radius:3px 0 0 3px;
+}
+.trend-kpi:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(37,99,235,.12)}
+.trend-kpi .lk{font-size:11px;color:var(--slate-500);margin-bottom:2px}
+.trend-kpi .lv{font-size:20px;font-weight:700;color:var(--blue-800);line-height:1.2}
+.trend-kpi .lu{font-size:10px;color:var(--slate-400);margin-top:2px}
+
+.trend-body{display:flex;flex-direction:column;gap:12px;flex:1}
+.chart-wrap{
+  flex:1;background:var(--slate-50);border:1px solid var(--slate-200);
+  border-radius:8px;padding:8px 4px 4px;min-height:200px;
+}
+.chart-wrap svg{width:100%;height:200px;display:block;min-height:200px}
+.chart-legend{
+  display:flex;flex-wrap:wrap;gap:12px;margin-top:6px;padding:0 8px;
+}
+.chart-legend-item{
+  display:flex;align-items:center;gap:5px;font-size:11px;color:var(--slate-600);
+}
+.chart-legend-dot{width:10px;height:3px;border-radius:2px;flex-shrink:0}
+
+.chart-caption{
+  display:flex;justify-content:space-between;align-items:flex-start;gap:8px;
+  margin-top:4px;font-size:11px;color:var(--slate-400);line-height:1.4;
+}
+.chart-caption .source-text{flex:1;text-align:right}
+
+/* ===== 竞争分析 ===== */
+.compete-ticker{
+  background:var(--blue-50);border:1px solid var(--blue-100);border-radius:6px;
+  padding:7px 12px;font-size:12px;color:var(--blue-700);margin-bottom:12px;
+  overflow:hidden;white-space:nowrap;
+}
+.compete-ticker span{display:inline-block;animation:ticker 18s linear infinite}
+.compete-table-wrap{flex:1;min-width:0;overflow-x:auto;border-radius:8px;border:1px solid var(--slate-200)}
+.compete-table{width:100%;min-width:520px;border-collapse:collapse;font-size:12px}
+.compete-table thead th{
+  background:linear-gradient(180deg,var(--blue-700),var(--blue-800));color:#fff;font-weight:600;
+  padding:9px 10px;text-align:left;white-space:nowrap;
+}
+.compete-table tbody td{
+  padding:8px 10px;border-bottom:1px solid var(--slate-200);color:var(--slate-700);
+  max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.compete-table tbody tr:nth-child(even) td{background:var(--slate-50)}
+.compete-table tbody tr:hover td{background:var(--blue-50)}
+.compete-note{
+  margin-top:10px;font-size:11px;color:var(--slate-400);
+  padding:6px 10px;border:1px dashed var(--slate-200);border-radius:6px;text-align:center;
+}
+
+/* Clickable panels */
+.clickable-panel{cursor:pointer;position:relative}
+.clickable-panel .no-navigate{position:relative;z-index:2}
+.clickable-panel::after{content:"";position:absolute;inset:0;z-index:1}
+.clickable-panel:hover{box-shadow:0 4px 20px rgba(37,99,235,.1)}
+
+.site-footer{margin-top:32px;text-align:center;font-size:12px;color:var(--slate-400)}
+
+/* ===== Responsive ===== */
+@media(max-width:900px){
+  .layer-observe,.layer-bottom,.articles-grid{grid-template-columns:1fr}
+  .articles-grid .article-row:nth-last-child(2):nth-child(odd){border-bottom:1px dashed var(--slate-200)}
+}
+@media(max-width:520px){
+  .trend-kpi-row{grid-template-columns:1fr}
+  .header-search{flex-direction:column;border-radius:6px}
+  .header-search button{padding:10px}
+}
+</style>
+</head>
+<body>
+<div class="site">
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <h1 class="header-title">京城机电产业研究与市场分析平台</h1>
+      <p style="color:rgba(255,255,255,0.75);font-size:13px;margin-bottom:16px;letter-spacing:1px">产业研究 · 市场分析 · 竞争洞察 · 政策监测</p>
+      <form class="header-search" role="search" id="header-search-form">
+        <input type="search" placeholder="请输入检索内容" aria-label="搜索">
+        <button type="submit">搜 索</button>
+      </form>
+    </div>
+  </header>
+
+  <!-- Ticker -->
+  <div class="ticker-bar">
+    <div class="ticker-label">
+      <span class="ticker-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+      </span>
+      最新政策
+    </div>
+    <div class="ticker-track">
+      <span class="ticker-text" id="policy-ticker"></span>
+    </div>
+  </div>
+
+  <!-- 【上层 · 全宽】工业观察 -->
+  <section class="layer layer-observe" aria-label="工业观察">
+    <a class="visual-block module-link" href="pages/工业观察看板.html?industry=%E6%9C%BA%E5%BA%8A&amp;tab=policy" aria-label="进入工业观察看板">
+      <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="300" viewBox="0 0 600 300" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#0a2558"/>
+            <stop offset="100%" stop-color="#1a56b5"/>
+          </linearGradient>
+          <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#f59e0b" stop-opacity=".6"/>
+            <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <rect width="600" height="300" fill="url(#bg)"/>
+        <circle cx="300" cy="150" r="90" fill="url(#glow)"/>
+        <circle cx="300" cy="150" r="60" fill="none" stroke="#60a5fa" stroke-width="2" opacity=".5"/>
+        <circle cx="300" cy="150" r="80" fill="none" stroke="#06b6d4" stroke-width="1" stroke-dasharray="6 4" opacity=".4"/>
+        <path d="M240 150 L300 110 L360 150 L300 190 Z" fill="none" stroke="#93c5fd" stroke-width="1.5" opacity=".6"/>
+        <line x1="120" y1="150" x2="480" y2="150" stroke="#3b82f6" stroke-width=".5" opacity=".3"/>
+        <line x1="300" y1="50" x2="300" y2="250" stroke="#3b82f6" stroke-width=".5" opacity=".3"/>
+      </svg>
+      <div class="visual-overlay">
+        <div class="visual-tag">分析看板 · 工业观察</div>
+        <div class="visual-title">产业政策解读 · 重大事件监测 · 招投标跟踪</div>
+        <span class="visual-enter">进入工业观察看板 →</span>
+      </div>
+    </a>
+
+    <div class="news-panel">
+      <div class="news-tabs" role="tablist" aria-label="工业观察分类">
+        <button type="button" class="news-tab" role="tab" data-panel="policy" aria-selected="true">热门政策</button>
+        <button type="button" class="news-tab" role="tab" data-panel="industry" aria-selected="false">产业动态</button>
+        <button type="button" class="news-tab" role="tab" data-panel="enterprise" aria-selected="false">企业动态</button>
+      </div>
+      <div class="news-list" id="news-list"></div>
+      <a class="news-panel-link" id="news-panel-link" href="pages/工业观察看板.html?industry=%E6%9C%BA%E5%BA%8A&amp;tab=policy">进入工业观察看板 →</a>
+    </div>
+  </section>
+
+  <!-- 【中层 · 全宽】主题报告 -->
+  <section class="layer layer-report" aria-label="主题报告">
+    <a class="module-link articles-section" href="pages/主题报告看板v5.2.html" aria-label="进入主题报告看板">
+      <div class="sec-head"><span class="icon diamond" aria-hidden="true"></span>推荐文章 · 主题报告 <span class="sample-badge" style="margin-left:8px">示例文章</span></div>
+      <div class="articles-grid" id="articles-grid"></div>
+    </a>
+  </section>
+
+  <!-- 【底层 · 50/50】行业趋势 + 竞争分析 -->
+  <section class="layer layer-bottom" aria-label="行业趋势与竞争分析">
+
+    <!-- 左：行业趋势 -->
+    <div class="chart-panel clickable-panel" data-href="pages/行业趋势.html?industry=robot&amp;view=market" tabindex="0" role="link" aria-label="行业趋势，点击进入详情">
+      <div class="panel-head-row">
+        <div class="sec-head"><span class="icon" aria-hidden="true"></span>行业趋势</div>
+        <span class="goto-badge">点击查看详情</span>
+      </div>
+      <div class="trend-tabs no-navigate" role="tablist" aria-label="行业选择">
+        <button type="button" class="trend-tab" role="tab" data-key="robot" aria-selected="true">工业机器人</button>
+        <button type="button" class="trend-tab" role="tab" data-key="machine" aria-selected="false">机床</button>
+      </div>
+      <div class="no-navigate trend-body" id="trend-content">
+        <div class="trend-kpi-row" id="trend-kpis"></div>
+        <div class="chart-wrap" id="trend-chart"></div>
+        <div class="chart-legend" id="chart-legend"></div>
+        <div class="chart-caption">
+          <span id="chart-title">产量与国产化率趋势</span>
+          <span class="source-text" id="chart-source"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右：竞争分析 -->
+    <div class="compete-panel clickable-panel" data-href="pages/竞争分析看板_v4.5.html?company=jcme" tabindex="0" role="link" aria-label="竞争分析，点击进入详情">
+      <div class="panel-head-row">
+        <div class="sec-head"><span class="icon" aria-hidden="true"></span>竞争分析</div>
+        <span class="sample-badge">MOSS数据</span>
+      </div>
+      <div class="compete-ticker no-navigate"><span id="compete-ticker-text"></span></div>
+      <div class="compete-table-wrap no-navigate">
+        <table class="compete-table">
+          <thead>
+            <tr>
+              <th>公司名称</th>
+              <th>规模/营收</th>
+              <th>授权专利</th>
+              <th>亮点</th>
+            </tr>
+          </thead>
+          <tbody id="compete-table-body"></tbody>
+        </table>
+      </div>
+      <div class="compete-note no-navigate">数据来源：MOSS企业360透视 · 京城机电及4家竞对企业</div>
+    </div>
+  </section>
+
+  <footer class="site-footer">京城机电产业研究与市场分析平台 · MOSS数据驱动</footer>
+</div>
+
+<script src="assets/demo-data.js"></script>
+<script src="assets/industrial-observation-data.js"></script>
+<script src="assets/compete-profile-data.js"></script>
+<script src="assets/industry-chain-data.js"></script>
+<script>
+(function initIndexPage(){
+  var D = window.DEMO_DATA || {};
+  var IO = D.industrialObservation || [];
+  var PROFILES = (window.COMPETE_PROFILES && window.COMPETE_PROFILES.companies) || [];
+
+  var PANEL_TAB_MAP = { policy: 'policy', industry: 'industry', enterprise: 'event' };
+  var INDUSTRY_TAG = {
+    '机床': { label: '机床', cls: 'tag-jc' },
+    '机器人': { label: '机器人', cls: 'tag-ny' },
+    '氢能及气体储运装备': { label: '氢能', cls: 'tag-h2' },
+    '氢能': { label: '氢能', cls: 'tag-h2' }
+  };
+
+  function esc(s){
+    if(!s) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function ioBoardHref(industry, tab, itemId){
+    return 'pages/工业观察看板.html?industry=' + encodeURIComponent(industry) +
+      '&tab=' + tab + '&item=' + itemId;
+  }
+
+  function industryTag(industry){
+    return INDUSTRY_TAG[industry] || { label: industry || '机床', cls: 'tag-jc' };
+  }
+
+  function buildNewsFromIO(panelKey){
+    var type = PANEL_TAB_MAP[panelKey] || 'policy';
+    return IO.filter(function(it){ return it.type === type; })
+      .sort(function(a,b){ return String(b.date).localeCompare(String(a.date)); })
+      .slice(0, 5)
+      .map(function(it){
+        var tag = industryTag(it.industry);
+        return {
+          tag: tag.label,
+          cls: tag.cls,
+          title: it.title,
+          href: ioBoardHref(it.industry, type, it.id),
+          external: false
+        };
+      });
+  }
+
+  function buildNewsFallback(panelKey){
+    return (D.news && D.news[panelKey]) ? D.news[panelKey].map(function(it, idx){
+      var type = PANEL_TAB_MAP[panelKey] || 'policy';
+      var industry = { '机床': '机床', '机器人': '机器人', '氢能': '氢能及气体储运装备' }[it.tag] || '机床';
+      return {
+        tag: it.tag,
+        cls: it.cls,
+        title: it.title,
+        href: it.url || ioBoardHref(industry, type, idx + 1),
+        external: !!it.external
+      };
+    }) : [];
+  }
+
+  /* ===== 1. 最新政策 ticker ===== */
+  function renderTicker(){
+    var tickerEl = document.getElementById('policy-ticker');
+    if(!tickerEl) return;
+
+    var items = [];
+    if(D.ticker && D.ticker.length){
+      items = D.ticker.map(function(t){
+        return { title: t.title, href: t.url, external: true };
+      });
+    } else {
+      items = IO.filter(function(it){ return it.type === 'policy'; })
+        .sort(function(a,b){ return String(b.date).localeCompare(String(a.date)); })
+        .slice(0, 5)
+        .map(function(it){
+          return { title: it.title, href: ioBoardHref(it.industry, 'policy', it.id), external: false };
+        });
+    }
+
+    if(!items.length) return;
+
+    var sep = ' &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp; ';
+    var html = items.map(function(t){
+      var ext = t.external ? ' target="_blank" rel="noopener"' : '';
+      return '<a href="'+esc(t.href)+'"'+ext+'>'+esc(t.title)+'</a>';
+    }).join(sep);
+    tickerEl.innerHTML = html + sep + html;
+  }
+
+  /* ===== 2. 工业观察页签列表 ===== */
+  var newsListEl = document.getElementById('news-list');
+  var newsTabs = document.querySelectorAll('.news-tab');
+  var newsPanelLink = document.getElementById('news-panel-link');
+  var activeNewsPanel = 'policy';
+
+  function renderNews(key){
+    activeNewsPanel = key;
+    var items = IO.length ? buildNewsFromIO(key) : buildNewsFallback(key);
+    if(!newsListEl) return;
+
+    newsListEl.innerHTML = items.map(function(it){
+      var ext = it.external ? ' target="_blank" rel="noopener"' : '';
+      return '<a class="news-item" href="'+esc(it.href)+'"'+ext+'>' +
+        '<span class="news-tag '+esc(it.cls)+'">'+esc(it.tag)+'</span>' +
+        '<span class="news-title">'+esc(it.title)+'</span></a>';
+    }).join('');
+
+    if(newsPanelLink){
+      var tab = PANEL_TAB_MAP[key] || 'policy';
+      newsPanelLink.href = 'pages/工业观察看板.html?industry=' + encodeURIComponent('机床') + '&tab=' + tab;
+    }
+  }
+
+  newsTabs.forEach(function(tab){
+    tab.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      newsTabs.forEach(function(t){ t.setAttribute('aria-selected', t === tab ? 'true' : 'false'); });
+      renderNews(tab.dataset.panel);
+    });
+  });
+  renderNews('policy');
+
+  var visualBlock = document.querySelector('.visual-block');
+  if(visualBlock){
+    var firstPolicy = IO.find(function(it){ return it.type === 'policy'; });
+    if(firstPolicy){
+      visualBlock.href = ioBoardHref(firstPolicy.industry, 'policy', firstPolicy.id);
+    }
+  }
+
+  /* ===== 3. 主题报告推荐文章 ===== */
+  function renderArticles(){
+    var grid = document.getElementById('articles-grid');
+    var articles = D.articles || [];
+    if(!grid || !articles.length) return;
+
+    grid.innerHTML = articles.map(function(a){
+      return '<div class="article-row">' +
+        '<span class="article-title">'+esc(a.title)+'</span>' +
+        '<span class="article-date">'+esc(a.date)+'</span></div>';
+    }).join('');
+  }
+  renderArticles();
+
+  /* ===== 4. 行业趋势 ===== */
+  var TREND_DATA = D.trends || {};
+  var trendTabs = document.querySelectorAll('.trend-tab');
+  var kpiEl = document.getElementById('trend-kpis');
+  var chartEl = document.getElementById('trend-chart');
+  var legendEl = document.getElementById('chart-legend');
+  var chartTitleEl = document.getElementById('chart-title');
+  var trendsPanel = document.querySelector('.chart-panel.clickable-panel');
+  var activeTrendKey = 'robot';
+
+  function trendHref(key){
+    return 'pages/行业趋势.html?industry=' + (key || activeTrendKey) + '&view=market';
+  }
+
+  function scaleY(val, maxVal, top, bottom){
+    return bottom - (val / maxVal) * (bottom - top);
+  }
+
+  function renderKpis(kpis){
+    if(!kpiEl) return;
+    kpiEl.innerHTML = kpis.map(function(k){
+      return '<div class="trend-kpi"><div class="lk">'+esc(k.label)+'</div>' +
+        '<div class="lv">'+esc(k.value)+'</div><div class="lu">'+esc(k.unit)+'</div></div>';
+    }).join('');
+  }
+
+  function renderDualAxisChart(years, series){
+    var W = 480, H = 200, padL = 44, padR = 44, padT = 24, padB = 28;
+    var plotW = W - padL - padR, plotH = H - padT - padB;
+    var plotBottom = padT + plotH;
+    var leftSeries = series.find(function(s){ return s.yAxis === 'left'; }) || series[0];
+    var rightSeries = series.find(function(s){ return s.yAxis === 'right'; }) || series[1];
+    if(!leftSeries || !rightSeries) return '';
+
+    var leftVals = leftSeries.values.slice(0, years.length);
+    var rightVals = rightSeries.values.slice(0, years.length);
+    var maxLeft = Math.max.apply(null, leftVals) * 1.12 || 1;
+    var maxRight = Math.max.apply(null, rightVals) * 1.12 || 1;
+
+    var areaGrad = '<linearGradient id="areaGradLeft" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0%" stop-color="'+leftSeries.color+'" stop-opacity=".18"/>' +
+      '<stop offset="100%" stop-color="'+leftSeries.color+'" stop-opacity="0"/></linearGradient>';
+
+    var gridLines = '';
+    for(var g = 0; g <= 4; g++){
+      var gy = padT + (g / 4) * plotH;
+      gridLines += '<line x1="'+padL+'" y1="'+gy+'" x2="'+(padL+plotW)+'" y2="'+gy+'" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3 3"/>';
+    }
+
+    var leftAxisY = '';
+    for(var a = 0; a <= 4; a++){
+      var lval = Math.round(maxLeft * (4 - a) / 4 * 10) / 10;
+      var lay = padT + (a / 4) * plotH + 3;
+      leftAxisY += '<text x="'+(padL-6)+'" y="'+lay+'" font-size="9" fill="'+leftSeries.color+'" text-anchor="end">'+lval+'</text>';
+    }
+
+    var rightAxisY = '';
+    for(var b = 0; b <= 4; b++){
+      var rval = Math.round(maxRight * (4 - b) / 4);
+      var ray = padT + (b / 4) * plotH + 3;
+      rightAxisY += '<text x="'+(padL+plotW+6)+'" y="'+ray+'" font-size="9" fill="'+rightSeries.color+'" text-anchor="start">'+rval+'%</text>';
+    }
+
+    function seriesPoints(vals, maxV){
+      return vals.map(function(v, i){
+        var x = padL + (years.length > 1 ? (i / (years.length - 1)) * plotW : plotW / 2);
+        var y = scaleY(v, maxV, padT, plotBottom);
+        return { x: x, y: y };
+      });
+    }
+
+    var leftPts = seriesPoints(leftVals, maxLeft);
+    var rightPts = seriesPoints(rightVals, maxRight);
+    var leftPoly = leftPts.map(function(p){ return p.x+','+p.y; }).join(' ');
+    var leftArea = padL+','+plotBottom+' '+leftPoly+' '+leftPts[leftPts.length-1].x+','+plotBottom;
+    var leftDots = leftPts.map(function(p){
+      return '<circle cx="'+p.x+'" cy="'+p.y+'" r="3.5" fill="#fff" stroke="'+leftSeries.color+'" stroke-width="2"/>';
+    }).join('');
+    var rightPoly = rightPts.map(function(p){ return p.x+','+p.y; }).join(' ');
+    var rightDots = rightPts.map(function(p){
+      return '<circle cx="'+p.x+'" cy="'+p.y+'" r="3.5" fill="#fff" stroke="'+rightSeries.color+'" stroke-width="2"/>';
+    }).join('');
+
+    var labels = years.map(function(y, i){
+      var x = padL + (years.length > 1 ? (i / (years.length - 1)) * plotW : plotW / 2);
+      return '<text x="'+x+'" y="'+(H-6)+'" font-size="10" fill="#64748b" text-anchor="middle" font-weight="500">'+y+'</text>';
+    }).join('');
+
+    var axisTitles =
+      '<text x="'+padL+'" y="'+(padT-8)+'" font-size="9" fill="'+leftSeries.color+'" font-weight="600">'+esc(leftSeries.name.replace(/\([^)]*\)/,'').trim())+'</text>' +
+      '<text x="'+(padL+plotW)+'" y="'+(padT-8)+'" font-size="9" fill="'+rightSeries.color+'" text-anchor="end" font-weight="600">国产化率</text>';
+
+    return '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none">' +
+      '<defs>'+areaGrad+'</defs>' +
+      gridLines +
+      '<line x1="'+padL+'" y1="'+padT+'" x2="'+padL+'" y2="'+plotBottom+'" stroke="'+leftSeries.color+'" stroke-width="1.5" opacity=".6"/>' +
+      '<line x1="'+(padL+plotW)+'" y1="'+padT+'" x2="'+(padL+plotW)+'" y2="'+plotBottom+'" stroke="'+rightSeries.color+'" stroke-width="1.5" opacity=".6"/>' +
+      '<line x1="'+padL+'" y1="'+plotBottom+'" x2="'+(padL+plotW)+'" y2="'+plotBottom+'" stroke="#cbd5e1" stroke-width="1"/>' +
+      leftAxisY + rightAxisY + axisTitles +
+      '<polygon points="'+leftArea+'" fill="url(#areaGradLeft)"/>' +
+      '<polyline points="'+leftPoly+'" fill="none" stroke="'+leftSeries.color+'" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>' +
+      leftDots +
+      '<polyline points="'+rightPoly+'" fill="none" stroke="'+rightSeries.color+'" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>' +
+      rightDots +
+      labels +
+      '</svg>';
+  }
+
+  function renderChartLegend(series){
+    if(!legendEl) return;
+    legendEl.innerHTML = series.map(function(s){
+      return '<span class="chart-legend-item">' +
+        '<span class="chart-legend-dot" style="background:'+s.color+'"></span>' +
+        esc(s.name) + '</span>';
+    }).join('');
+  }
+
+  function renderTrend(key){
+    var d = TREND_DATA[key];
+    if(!d) return;
+    activeTrendKey = key;
+    renderKpis(d.kpis);
+    if(chartTitleEl) chartTitleEl.textContent = d.chartTitle || '市场规模趋势';
+    if(chartEl) chartEl.innerHTML = renderDualAxisChart(d.years, d.series);
+    renderChartLegend(d.series);
+    var srcEl = document.getElementById('chart-source');
+    if(srcEl) srcEl.textContent = d.source ? '数据来源：' + d.source : '';
+    if(trendsPanel) trendsPanel.dataset.href = trendHref(key);
+  }
+
+  trendTabs.forEach(function(tab){
+    tab.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      trendTabs.forEach(function(t){ t.setAttribute('aria-selected', t === tab ? 'true' : 'false'); });
+      renderTrend(tab.dataset.key);
+    });
+  });
+  renderTrend('robot');
+
+  bindClickablePanel(trendsPanel);
+
+  /* ===== 5. 竞争分析 ===== */
+  function findCompetitorDetail(name){
+    return (D.competitorDetails || []).find(function(c){ return c.name === name; });
+  }
+
+  function formatRevenue(company){
+    if(company.demoFinance && company.demoFinance.revenue && company.demoFinance.revenue.length){
+      var rev = company.demoFinance.revenue;
+      return rev[rev.length - 1] + '亿';
+    }
+    var legacy = (D.competitors || []).find(function(c){
+      return c.name.indexOf(company.shortName.replace(/（.*?）/,'')) >= 0 ||
+        company.displayName.indexOf(c.name.replace(/股份有限公司.*/,'')) >= 0;
+    });
+    return legacy && legacy.revenue !== '—' ? legacy.revenue : '—';
+  }
+
+  function formatScale(company){
+    var p = company.profile || {};
+    if(p.employees && p.employees !== '—') return p.employees;
+    var detail = findCompetitorDetail(company.displayName);
+    return detail && detail.scale ? detail.scale : (p.regCapi || '—');
+  }
+
+  function formatPatents(company){
+    var detail = findCompetitorDetail(company.displayName);
+    if(detail && detail.patents != null) return String(detail.patents) + '篇';
+    return '—';
+  }
+
+  function formatHighlight(company){
+    if(company.isSelf) return '我方 · 首都装备制造';
+    var detail = findCompetitorDetail(company.displayName);
+    if(detail && detail.opportunity) return detail.opportunity.split('，')[0];
+    var legacy = (D.competitors || []).find(function(c){ return company.displayName.indexOf(c.name.split('股份')[0]) >= 0; });
+    return legacy && legacy.highlight ? legacy.highlight : (company.profile && company.profile.industry ? company.profile.industry.split(' · ')[0] : '—');
+  }
+
+  function renderCompeteTable(){
+    var ctBody = document.getElementById('compete-table-body');
+    if(!ctBody) return;
+
+    var rows = PROFILES.length ? PROFILES : (D.competitors || []).map(function(c, i){
+      return {
+        id: i === 0 ? 'jcme' : 'comp-' + (i - 1),
+        shortName: c.name,
+        displayName: c.name,
+        isSelf: i === 0,
+        profile: {},
+        demoFinance: null
+      };
+    });
+
+    ctBody.innerHTML = rows.map(function(c){
+      var bold = c.isSelf ? ' style="font-weight:600;color:#1d4ed8;cursor:pointer"' : ' style="cursor:pointer"';
+      var scaleRev = formatRevenue(c);
+      var scaleText = scaleRev !== '—' ? scaleRev : formatScale(c);
+      return '<tr data-company="'+esc(c.id)+'"'+bold+'>' +
+        '<td>'+esc(c.shortName || c.displayName)+'</td>' +
+        '<td>'+esc(scaleText)+'</td>' +
+        '<td>'+esc(formatPatents(c))+'</td>' +
+        '<td>'+esc(formatHighlight(c))+'</td></tr>';
+    }).join('');
+
+    ctBody.querySelectorAll('tr[data-company]').forEach(function(tr){
+      tr.addEventListener('click', function(e){
+        e.stopPropagation();
+        window.location.href = 'pages/竞争分析看板_v4.5.html?company=' + encodeURIComponent(tr.dataset.company);
+      });
+    });
+  }
+
+  function renderCompeteTicker(){
+    var ctTicker = document.getElementById('compete-ticker-text');
+    if(!ctTicker || !D.competeTicker) return;
+    var text = D.competeTicker.join('  |  ');
+    ctTicker.textContent = text + '  |  ' + text;
+  }
+
+  renderCompeteTable();
+  renderCompeteTicker();
+
+  var competePanel = document.querySelector('.compete-panel.clickable-panel');
+  bindClickablePanel(competePanel);
+
+  /* ===== 6. Header 搜索 ===== */
+  var searchForm = document.querySelector('.header-search');
+  if(searchForm){
+    searchForm.addEventListener('submit', function(e){
+      e.preventDefault();
+      var q = (searchForm.querySelector('input') || {}).value;
+      q = (q || '').trim().toLowerCase();
+      if(!q){ return; }
+
+      var hit = IO.find(function(it){ return it.title.toLowerCase().indexOf(q) >= 0; });
+      if(hit){
+        window.location.href = ioBoardHref(hit.industry, hit.type, hit.id);
+        return;
+      }
+
+      if(/机器人|埃斯顿|人形/.test(q)){
+        window.location.href = trendHref('robot');
+        return;
+      }
+      if(/机床|数控|母机|五轴/.test(q)){
+        window.location.href = trendHref('machine');
+        return;
+      }
+      if(/竞争|竞对|东方电气|上海电气|沈阳机床|秦川/.test(q)){
+        var comp = PROFILES.find(function(c){
+          return (c.shortName + c.displayName).toLowerCase().indexOf(q) >= 0;
+        });
+        window.location.href = 'pages/竞争分析看板_v4.5.html?company=' + (comp ? comp.id : 'jcme');
+        return;
+      }
+      if(/报告|主题|战略/.test(q)){
+        window.location.href = 'pages/主题报告看板v5.2.html';
+        return;
+      }
+
+      window.location.href = 'pages/工业观察看板.html?industry=' + encodeURIComponent('机床') + '&tab=policy';
+    });
+  }
+
+  function bindClickablePanel(panel){
+    if(!panel) return;
+    panel.addEventListener('click', function(e){
+      if(e.target.closest('.no-navigate')) return;
+      var href = panel.dataset.href;
+      if(href) window.location.href = href;
+    });
+    panel.addEventListener('keydown', function(e){
+      if((e.key === 'Enter' || e.key === ' ') && !e.target.closest('.no-navigate')){
+        e.preventDefault();
+        var href = panel.dataset.href;
+        if(href) window.location.href = href;
+      }
+    });
+  }
+
+  renderTicker();
+})();
+</script>
+</body>
+</html>

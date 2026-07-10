@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>行业趋势 - 京城机电产业研究与市场分析平台</title>
+<link rel="stylesheet" href="../assets/subpage-layout.css">
+<link rel="stylesheet" href="../assets/subpage-nav.css">
+<link rel="stylesheet" href="../assets/trend-page.css">
+</head>
+<body>
+<div class="subpage-with-nav">
+  <div id="platform-nav-mount" data-active="trend"></div>
+
+  <div class="subpage-wrap">
+  <header class="subpage-header">
+    <h1>行业趋势分析 <span class="subpage-badge">MOSS数据</span></h1>
+    <p>聚焦工业机器人与数控机床两大赛道，汇总市场规模、产业链节点与政策热点，辅助战略研判。</p>
+  </header>
+
+  <div class="subpage-body">
+    <nav class="subpage-sidebar" id="sidebar" aria-label="行业趋势目录">
+      <div class="sidebar-industry-switch">
+        <button type="button" class="industry-btn active" data-industry="robot">工业机器人</button>
+        <button type="button" class="industry-btn" data-industry="machine">数控机床</button>
+      </div>
+      <div class="sidebar-industry-title" id="sidebar-title">工业机器人</div>
+      <div class="nav-group-label">数据目录</div>
+      <button type="button" class="nav-item active" data-view="overview">数据定义 / 首页概览</button>
+      <button type="button" class="nav-item" data-view="chain">产业链图谱</button>
+      <button type="button" class="nav-item" data-view="market">市场规模数据</button>
+      <button type="button" class="nav-item" data-view="hotspot">近期热点</button>
+    </nav>
+
+    <main class="subpage-content" id="content" aria-live="polite"></main>
+  </div>
+
+  <footer class="subpage-footer">京城机电产业研究与市场分析平台 · 行业趋势分析</footer>
+  </div>
+</div>
+
+<script src="../assets/subpage-nav.js"></script>
+<script src="../assets/demo-data.js"></script>
+<script src="../assets/industry-chain-data.js"></script>
+<script>
+(function(){
+  var D = window.DEMO_DATA;
+  var CHAIN = window.INDUSTRY_CHAIN_DATA;
+  var contentEl = document.getElementById('content');
+  var state = { industry: 'robot', view: 'overview', period: 'annual', chainNode: null };
+
+  var INDUSTRIES = {
+    robot: { label: '工业机器人', short: '机器人' },
+    machine: { label: '数控机床', short: '机床' }
+  };
+
+  function fmtNum(n){
+    if(n >= 10000) return (n / 10000).toFixed(1) + '万';
+    return n.toLocaleString('zh-CN');
+  }
+
+  function scaleY(val, maxVal, top, bottom){
+    return bottom - (val / maxVal) * (bottom - top);
+  }
+
+  function renderGroupedBarChart(years, seriesList){
+    var W = 480, H = 220, padL = 44, padR = 12, padT = 20, padB = 36;
+    var plotW = W - padL - padR, plotH = H - padT - padB;
+    var allVals = [];
+    seriesList.forEach(function(s){ allVals = allVals.concat(s.values); });
+    var maxV = Math.max.apply(null, allVals) * 1.12;
+    var groupW = plotW / years.length;
+    var barW = Math.min(18, (groupW - 8) / seriesList.length);
+    var gap = (groupW - barW * seriesList.length) / (seriesList.length + 1);
+    var bars = '';
+    years.forEach(function(y, gi){
+      seriesList.forEach(function(s, si){
+        var v = s.values[gi];
+        if(v == null || v === 0) return;
+        var h = (v / maxV) * plotH;
+        var x = padL + gi * groupW + gap + si * (barW + gap);
+        var yPos = padT + plotH - h;
+        bars += '<rect x="' + x + '" y="' + yPos + '" width="' + barW + '" height="' + h + '" rx="2" fill="' + s.color + '"/>';
+        if(h > 16) bars += '<text x="' + (x + barW/2) + '" y="' + (yPos - 3) + '" font-size="8" fill="#64748b" text-anchor="middle">' + v + '</text>';
+      });
+      var lx = padL + gi * groupW + groupW / 2;
+      bars += '<text x="' + lx + '" y="' + (H - 6) + '" font-size="10" fill="#94a3b8" text-anchor="middle">' + y + '</text>';
+    });
+    var grid = '';
+    for(var g = 0; g <= 4; g++){
+      var gy = padT + (g / 4) * plotH;
+      grid += '<line x1="' + padL + '" y1="' + gy + '" x2="' + (padL + plotW) + '" y2="' + gy + '" stroke="#e2e8f0" stroke-dasharray="3,3"/>';
+    }
+    return '<svg viewBox="0 0 ' + W + ' ' + H + '">' +
+      grid +
+      '<line x1="' + padL + '" y1="' + padT + '" x2="' + padL + '" y2="' + (padT + plotH) + '" stroke="#cbd5e1"/>' +
+      '<line x1="' + padL + '" y1="' + (padT + plotH) + '" x2="' + (padL + plotW) + '" y2="' + (padT + plotH) + '" stroke="#cbd5e1"/>' +
+      bars + '</svg>';
+  }
+
+  function renderLineChart(years, values, color){
+    var W = 480, H = 220, padL = 44, padR = 12, padT = 20, padB = 36;
+    var plotW = W - padL - padR, plotH = H - padT - padB;
+    var maxV = Math.max.apply(null, values) * 1.15;
+    var pts = values.map(function(v, i){
+      var x = padL + (i / (values.length - 1)) * plotW;
+      var y = scaleY(v, maxV, padT, padT + plotH);
+      return x + ',' + y;
+    });
+    var area = 'M' + padL + ',' + (padT + plotH) + ' L' + pts.join(' L') + ' L' + (padL + plotW) + ',' + (padT + plotH) + ' Z';
+    var labels = years.map(function(y, i){
+      var x = padL + (i / (years.length - 1)) * plotW;
+      return '<text x="' + x + '" y="' + (H - 6) + '" font-size="10" fill="#94a3b8" text-anchor="middle">' + y + '</text>';
+    }).join('');
+    var dots = values.map(function(v, i){
+      var x = padL + (i / (values.length - 1)) * plotW;
+      var y = scaleY(v, maxV, padT, padT + plotH);
+      return '<circle cx="' + x + '" cy="' + y + '" r="3.5" fill="' + color + '"/>';
+    }).join('');
+    return '<svg viewBox="0 0 ' + W + ' ' + H + '"><path d="' + area + '" fill="' + color + '" fill-opacity="0.12"/><polyline points="' + pts.join(' ') + '" fill="none" stroke="' + color + '" stroke-width="2"/>' + dots + labels + '</svg>';
+  }
+
+  function renderMarketTable(table){
+    var ths = table.headers.map(function(h, i){
+      return '<th' + (i > 0 ? ' class="num"' : '') + '>' + h + '</th>';
+    }).join('');
+    var trs = table.rows.map(function(row){
+      var tds = '<td class="row-name">' + row.name + '</td>';
+      row.values.forEach(function(v){
+        tds += '<td class="num">' + v + '</td>';
+      });
+      return '<tr>' + tds + '</tr>';
+    }).join('');
+    return '<table class="market-table"><thead><tr>' + ths + '</tr></thead><tbody>' + trs + '</tbody></table>';
+  }
+
+  function renderOverview(industry){
+    var t = D.trends[industry];
+    var kpis = t.kpis.map(function(k){
+      return '<div class="kpi"><div class="lk">' + k.label + '</div><div class="lv">' + k.value + '</div><div class="lu">' + k.unit + '</div></div>';
+    }).join('');
+    var globalRows = t.global.rows.map(function(r){
+      return '<tr><td>' + r.join('</td><td>') + '</td></tr>';
+    }).join('');
+    var globalTh = t.global.headers.map(function(h){ return '<th>' + h + '</th>'; }).join('');
+    return '<div class="content-title">' + t.label + ' — 首页概览</div>' +
+      '<div class="content-meta"><span class="tag tag-blue">' + t.label + '</span><span class="content-date">来源：' + t.source + '</span></div>' +
+      '<div class="insight-box"><strong>数据定义：</strong>' + t.definition + '</div>' +
+      '<p class="content-summary">' + t.description + '</p>' +
+      '<div class="kpi-row">' + kpis + '</div>' +
+      '<div class="content-section-title">全球市场</div>' +
+      '<table class="std-table"><thead><tr>' + globalTh + '</tr></thead><tbody>' + globalRows + '</tbody></table>' +
+      '<div class="content-section-title">' + t.chartTitle + '</div>' +
+      '<div class="chart-box">' + renderLineChart(t.years, t.series[0].values, t.series[0].color) +
+      '<div class="chart-cap"><span>单位：' + t.unit + '</span><span>来源：' + t.source + '</span></div></div>';
+  }
+
+  function renderMarket(industry){
+    var t = D.trends[industry];
+    var table = t.tables[state.period];
+    var isDemo = state.period !== 'annual';
+    var periodLabels = { annual: '年度', quarterly: '季度', monthly: '月度' };
+    var tabs = ['annual', 'quarterly', 'monthly'].map(function(p){
+      var demo = p !== 'annual' ? ' <span class="demo-tag">示例</span>' : '';
+      return '<button type="button" class="period-tab' + (state.period === p ? ' active' : '') + '" data-period="' + p + '">' + periodLabels[p] + demo + '</button>';
+    }).join('');
+
+    var chartYears = state.period === 'annual' ? t.years : table.headers.slice(1);
+    var chartSeries = state.period === 'annual'
+      ? t.series
+      : table.rows.slice(0, 2).map(function(row, i){
+          return { name: row.name, color: i === 0 ? '#2563eb' : '#059669', values: row.values.map(Number) };
+        });
+    var chart = state.period === 'annual'
+      ? renderGroupedBarChart(chartYears, chartSeries)
+      : renderGroupedBarChart(chartYears, chartSeries);
+
+    var legend = chartSeries.map(function(s){
+      return '<span style="--c:' + s.color + '"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:' + s.color + ';margin-right:4px;vertical-align:middle"></span>' + s.name + '</span>';
+    }).join('');
+
+    var demoNote = isDemo ? '<p class="note-box">季度/月度数据为 Demo 示例，年度数据来自公开行业报告。</p>' : '';
+
+    return '<div class="content-title">' + t.label + ' — 市场规模数据</div>' +
+      '<div class="period-tabs" role="tablist">' + tabs + '</div>' +
+      '<div class="data-desc">' + t.description + ' 数据来源：' + t.source + '。</div>' +
+      demoNote +
+      '<div class="market-split">' +
+        '<div class="market-panel">' +
+          '<div class="market-panel-head"><h3>' + t.tableTitle + '</h3><span class="market-panel-meta">单位：' + t.unit + '</span></div>' +
+          '<div class="market-panel-body">' + renderMarketTable(table) + '</div>' +
+        '</div>' +
+        '<div class="market-panel">' +
+          '<div class="market-panel-head"><h3>' + t.tableTitle + ' — 柱状图</h3><span class="market-panel-meta">来源：' + t.source + '</span></div>' +
+          '<div class="market-panel-body">' + chart + '<div class="chart-legend">' + legend + '</div></div>' +
+        '</div>' +
+      '</div>';
+  }
+
+  function renderChainNodeItems(nodes, side){
+    return nodes.map(function(n, i){
+      var key = side + '-' + i;
+      var active = state.chainNode === key ? ' active' : '';
+      return '<li role="button" tabindex="0" class="' + active.trim() + '" data-chain-node="' + key + '">' +
+        '<span>' + n.name + '</span>' +
+        '<span class="chain-node-pill">' + fmtNum(n.count) + ' 家</span></li>';
+    }).join('');
+  }
+
+  function getChainNodeData(industry, nodeKey){
+    var c = CHAIN[industry];
+    if(nodeKey === 'core') return { name: c.name, count: c.totalEnterprises, enterprises: c.coreEnterprises, isCore: true };
+    var parts = nodeKey.split('-');
+    var side = parts[0], idx = parseInt(parts[1], 10);
+    var list = side === 'upstream' ? c.upstream : c.downstream;
+    var node = list[idx];
+    return node ? { name: node.name, count: node.count, enterprises: node.enterprises, isCore: false } : null;
+  }
+
+  function renderEnterprisePanel(industry, nodeKey){
+    if(!nodeKey) return '<div id="chain-ent-panel" class="chain-enterprise-panel" hidden></div>';
+    var data = getChainNodeData(industry, nodeKey);
+    if(!data) return '<div id="chain-ent-panel" class="chain-enterprise-panel" hidden></div>';
+    var ents = data.enterprises || [];
+    var mdCount = ents.filter(function(e){ return e.source === 'md'; }).length;
+    var demoHint = mdCount < ents.length ? '<span class="demo-hint">代表企业样本 · Demo</span>' : '';
+    var rows = ents.map(function(e){
+      var tagCls = e.source === 'md' ? 'md' : 'demo';
+      var tagLabel = e.source === 'md' ? '报告数据' : '样本';
+      return '<li><span class="chain-ent-name">' + e.name + '</span>' +
+        '<span class="chain-ent-region">' + (e.region || '—') + '</span>' +
+        '<span class="chain-ent-type">' + (e.type || '—') + '</span>' +
+        '<span class="chain-ent-tag ' + tagCls + '">' + tagLabel + '</span></li>';
+    }).join('');
+    return '<div id="chain-ent-panel" class="chain-enterprise-panel">' +
+      '<div class="chain-ent-head">' +
+        '<div><h3>' + data.name + ' · 企业名单（' + ents.length + ' 家代表企业）</h3>' +
+        '<div class="chain-ent-meta">节点注册企业 ' + fmtNum(data.count) + ' 家 · 以下为代表样本' + demoHint + '</div></div>' +
+        '<button type="button" class="chain-ent-close" aria-label="关闭">×</button>' +
+      '</div>' +
+      '<ul class="chain-ent-list">' + rows + '</ul>' +
+    '</div>';
+  }
+
+  function renderChain(industry){
+    var c = CHAIN[industry];
+    var upstreamList = renderChainNodeItems(c.upstream, 'upstream');
+    var downstreamList = renderChainNodeItems(c.downstream, 'downstream');
+    var coreActive = state.chainNode === 'core' ? ' active' : '';
+    var badges = [
+      '<span class="chain-badge">范围：' + c.scope + '</span>',
+      '<span class="chain-badge green">上游节点 ' + c.stats.upstreamNodes + ' 个 / ' + c.stats.upstreamCategories + ' 类</span>',
+      '<span class="chain-badge purple">下游节点 ' + c.stats.downstreamNodes + ' 个 / ' + c.stats.downstreamCategories + ' 类</span>',
+      '<span class="chain-badge">企业总数 ' + fmtNum(c.totalEnterprises) + ' 家</span>'
+    ].join('');
+
+    return '<div class="chain-dark-wrap">' +
+      '<div class="chain-search-bar">' +
+        '<label>产业链节点</label><input type="text" placeholder="请输入节点名称" value="" readonly>' +
+        '<label>地域</label><select disabled><option>全国</option></select>' +
+        '<select disabled><option>省份</option></select>' +
+        '<select disabled><option>城市</option></select>' +
+        '<div class="chain-search-actions">' +
+          '<button type="button" class="chain-btn chain-btn-reset">重置</button>' +
+          '<button type="button" class="chain-btn chain-btn-search">查询</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="chain-header-card">' +
+        '<h2>' + c.name + ' — 产业链图谱</h2>' +
+        '<div class="chain-badges">' + badges + '</div>' +
+      '</div>' +
+      '<div class="chain-stat-row">' +
+        '<div class="chain-stat-card upstream"><div class="label">上游节点</div><div class="value">' + c.stats.upstreamNodes + '</div></div>' +
+        '<div class="chain-stat-card core"><div class="label">中心节点企业</div><div class="value">' + fmtNum(c.totalEnterprises) + '</div></div>' +
+        '<div class="chain-stat-card downstream"><div class="label">下游节点</div><div class="value">' + c.stats.downstreamNodes + '</div></div>' +
+      '</div>' +
+      '<div class="chain-flow-title">上下游图谱 <span style="font-weight:400;font-size:11px;color:#64748b">（点击节点查看企业名单）</span></div>' +
+      '<div class="chain-flow">' +
+        '<div class="chain-col upstream">' +
+          '<div class="chain-col-head">生产原料 · 上游</div>' +
+          '<ul class="chain-node-list" data-side="upstream">' + upstreamList + '</ul>' +
+        '</div>' +
+        '<div class="chain-flow-arrow">→</div>' +
+        '<div class="chain-core' + coreActive + '" data-chain-node="core">' +
+          '<div class="core-tag">核心节点</div>' +
+          '<div class="core-name">' + c.name + '</div>' +
+          '<div class="core-en">' + c.nameEn + '</div>' +
+          '<div class="core-count">' + fmtNum(c.totalEnterprises) + ' 家企业</div>' +
+          '<button type="button" class="core-btn" data-chain-node="core">查看企业名单</button>' +
+        '</div>' +
+        '<div class="chain-flow-arrow">→</div>' +
+        '<div class="chain-col downstream">' +
+          '<div class="chain-col-head">应用领域 · 下游</div>' +
+          '<ul class="chain-node-list" data-side="downstream">' + downstreamList + '</ul>' +
+        '</div>' +
+      '</div>' +
+      renderEnterprisePanel(industry, state.chainNode) +
+      '<div class="chain-source-note">数据来源：' + c.source + ' · 报告日期 ' + c.reportDate + '</div>' +
+    '</div>';
+  }
+
+  function renderHotspot(industry){
+    var hot = D.trendHotspots[industry];
+    var items = hot.map(function(h){
+      return '<li><span class="news-date">' + h.date + '</span><span class="tag tag-blue">' + h.tag + '</span><span>' + h.title + '</span></li>';
+    }).join('');
+    var label = INDUSTRIES[industry].label;
+    return '<div class="content-title">' + label + ' — 近期热点</div>' +
+      '<p class="content-summary">汇总' + label + '赛道近期市场动态、政策信号与技术突破，辅助快速把握行业脉搏。</p>' +
+      '<ul class="news-list">' + items + '</ul>';
+  }
+
+  function render(){
+    var html = '';
+    switch(state.view){
+      case 'overview': html = renderOverview(state.industry); break;
+      case 'market': html = renderMarket(state.industry); break;
+      case 'chain': html = renderChain(state.industry); break;
+      case 'hotspot': html = renderHotspot(state.industry); break;
+    }
+    contentEl.innerHTML = html;
+    bindContentEvents();
+  }
+
+  function showChainNode(nodeKey){
+    state.chainNode = state.chainNode === nodeKey ? null : nodeKey;
+    if(state.view !== 'chain') return;
+    var wrap = contentEl.querySelector('.chain-dark-wrap');
+    if(!wrap) return;
+    wrap.querySelectorAll('[data-chain-node]').forEach(function(el){
+      var key = el.dataset.chainNode;
+      var isLi = el.tagName === 'LI';
+      var isCore = key === 'core';
+      if(isLi) el.classList.toggle('active', key === state.chainNode);
+      if(isCore && el.classList.contains('chain-core')) el.classList.toggle('active', key === state.chainNode);
+    });
+    var oldPanel = wrap.querySelector('#chain-ent-panel');
+    var panelHtml = renderEnterprisePanel(state.industry, state.chainNode);
+    if(oldPanel) oldPanel.outerHTML = panelHtml;
+    else wrap.insertAdjacentHTML('beforeend', panelHtml);
+    var panel = wrap.querySelector('#chain-ent-panel');
+    if(panel && !panel.hasAttribute('hidden')){
+      var closeBtn = panel.querySelector('.chain-ent-close');
+      if(closeBtn) closeBtn.addEventListener('click', function(){ showChainNode(state.chainNode); });
+      panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }
+
+  function bindContentEvents(){
+    contentEl.querySelectorAll('[data-period]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        state.period = btn.dataset.period;
+        render();
+      });
+    });
+    if(state.view === 'chain'){
+      contentEl.querySelectorAll('[data-chain-node]').forEach(function(el){
+        el.addEventListener('click', function(e){
+          if(e.target.closest('.chain-ent-close')) return;
+          showChainNode(el.dataset.chainNode);
+        });
+        if(el.tagName === 'LI'){
+          el.addEventListener('keydown', function(e){
+            if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); showChainNode(el.dataset.chainNode); }
+          });
+        }
+      });
+      var closeBtn = contentEl.querySelector('.chain-ent-close');
+      if(closeBtn) closeBtn.addEventListener('click', function(){ showChainNode(state.chainNode); });
+    }
+  }
+
+  function syncUI(){
+    document.querySelectorAll('.industry-btn').forEach(function(btn){
+      btn.classList.toggle('active', btn.dataset.industry === state.industry);
+    });
+    document.getElementById('sidebar-title').textContent = INDUSTRIES[state.industry].label;
+    document.querySelectorAll('#sidebar [data-view]').forEach(function(btn){
+      btn.classList.toggle('active', btn.dataset.view === state.view);
+    });
+  }
+
+  function updateURL(){
+    var params = new URLSearchParams();
+    params.set('industry', state.industry);
+    params.set('view', state.view);
+    history.replaceState(null, '', '?' + params.toString());
+  }
+
+  function setIndustry(industry){
+    state.industry = industry;
+    state.chainNode = null;
+    syncUI();
+    render();
+    updateURL();
+  }
+
+  function setView(view){
+    state.view = view;
+    if(view !== 'market') state.period = 'annual';
+    if(view !== 'chain') state.chainNode = null;
+    syncUI();
+    render();
+    updateURL();
+  }
+
+  document.getElementById('sidebar').addEventListener('click', function(e){
+    var indBtn = e.target.closest('[data-industry]');
+    if(indBtn){ setIndustry(indBtn.dataset.industry); return; }
+    var viewBtn = e.target.closest('[data-view]');
+    if(viewBtn){ setView(viewBtn.dataset.view); }
+  });
+
+  var params = new URLSearchParams(window.location.search);
+  var ind = params.get('industry');
+  var view = params.get('view');
+  if(ind === 'robot' || ind === 'machine') state.industry = ind;
+  if(['overview', 'market', 'chain', 'hotspot'].indexOf(view) >= 0) state.view = view;
+  syncUI();
+  render();
+})();
+</script>
+</body>
+</html>

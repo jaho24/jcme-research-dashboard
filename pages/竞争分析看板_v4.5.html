@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>竞争分析 - 京城机电产业研究与市场分析平台</title>
+<link rel="stylesheet" href="../assets/subpage-layout.css">
+<link rel="stylesheet" href="../assets/subpage-nav.css">
+<link rel="stylesheet" href="../assets/compete-page.css">
+</head>
+<body>
+<div class="compete-page">
+  <div id="platform-nav-mount" data-active="compete"></div>
+
+  <div class="compete-toolbar">
+    <div class="toolbar-search">
+      <select id="search-scope" aria-label="搜索范围">
+        <option value="all">全部</option>
+        <option value="company">企业名称</option>
+        <option value="product">产品</option>
+        <option value="industry">行业</option>
+      </select>
+      <input type="search" id="search-input" placeholder="在筛选结果中搜索公司或产品…" aria-label="搜索关键词">
+      <button type="button" id="search-btn">开始搜索</button>
+    </div>
+    <div class="toolbar-companies">
+      <span class="toolbar-companies-label">企业选择</span>
+      <div id="company-list"></div>
+    </div>
+  </div>
+
+  <main class="compete-main">
+    <h1 class="company-title" id="company-title"></h1>
+    <div class="compete-body">
+      <nav class="content-sidebar" id="content-sidebar" aria-label="内容目录"></nav>
+      <div class="content-panel" id="tab-panel" aria-live="polite"></div>
+    </div>
+  </main>
+
+  <footer class="compete-footer">京城机电产业研究与市场分析平台 · 竞争分析</footer>
+</div>
+
+<script src="../assets/subpage-nav.js"></script>
+<script src="../assets/compete-profile-data.js"></script>
+<script>
+(function(){
+  var DATA = window.COMPETE_PROFILES;
+  var companies = DATA.companies;
+
+  var TABS = [
+    { id: 'basic', label: '基本情况' },
+    { id: 'finance', label: '财务信息' },
+    { id: 'monitor', label: '业务监测' },
+    { id: 'factory', label: '工厂分布' }
+  ];
+
+  var COMPANY_IDS = companies.map(function(c){ return c.id; });
+  var state = { company: 'jcme', tab: 'basic' };
+
+  var companyListEl = document.getElementById('company-list');
+  var companyTitleEl = document.getElementById('company-title');
+  var contentSidebarEl = document.getElementById('content-sidebar');
+  var tabPanelEl = document.getElementById('tab-panel');
+
+  function getCompany(id){
+    for(var i = 0; i < companies.length; i++){
+      if(companies[i].id === id) return companies[i];
+    }
+    return companies[0];
+  }
+
+  function esc(s){
+    if(s == null) return '—';
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function field(label, value, isLink){
+    var v = esc(value);
+    if(isLink && value && value !== '—'){
+      v = '<a href="' + esc(value) + '" target="_blank" rel="noopener">' + esc(value) + '</a>';
+    }
+    return '<div class="profile-field"><div class="label">' + esc(label) + '</div><div class="value">' + v + '</div></div>';
+  }
+
+  function renderBasic(c){
+    var p = c.profile;
+    var left =
+      field('公司全称', p.fullName) +
+      field('法定代表人', p.legalPerson) +
+      field('统一社会信用代码', p.creditCode) +
+      field('工商注册号', p.regNo) +
+      field('注册日期', p.regDate) +
+      field('注册资本', p.regCapi) +
+      field('企业性质', p.nature) +
+      field('员工人数', p.employees) +
+      field('企业状态', p.status);
+    var right =
+      field('所属行业', p.industry) +
+      field('上市情况', p.listing) +
+      field('国别', p.country) +
+      field('省份', p.province) +
+      field('城市', p.city) +
+      field('品牌', p.brand) +
+      field('联系电话', p.phone) +
+      field('公司官网', p.website, true) +
+      field('集团归属', p.groupAffiliation) +
+      field('荣誉资质', p.honors);
+
+    var products = c.mainProducts.map(function(pr){
+      return '<li>' + esc(pr) + '</li>';
+    }).join('');
+
+    return '<div class="section-card">' +
+      '<div class="section-card-title">公司概况</div>' +
+      '<div class="profile-grid">' + left + right + '</div>' +
+      '</div>' +
+      '<div class="section-card">' +
+      '<div class="section-card-title">主营业务</div>' +
+      '<p class="text-block">' + esc(c.mainBusiness) + '</p>' +
+      '</div>' +
+      '<div class="section-card">' +
+      '<div class="section-card-title">主要产品</div>' +
+      '<ul class="product-list">' + products + '</ul>' +
+      '</div>';
+  }
+
+  function renderLineChart(years, values, color, unit){
+    var W = 440, H = 180, padL = 40, padR = 12, padT = 16, padB = 32;
+    var plotW = W - padL - padR, plotH = H - padT - padB;
+    var maxV = Math.max.apply(null, values.map(Math.abs)) * 1.15 || 1;
+    var minV = Math.min.apply(null, values);
+    var base = minV < 0 ? minV * 1.15 : 0;
+    var range = maxV - base;
+    function yPos(v){ return padT + plotH - ((v - base) / range) * plotH; }
+    var pts = values.map(function(v, i){
+      var x = padL + (i / Math.max(values.length - 1, 1)) * plotW;
+      return x + ',' + yPos(v);
+    });
+    var labels = years.map(function(y, i){
+      var x = padL + (i / Math.max(years.length - 1, 1)) * plotW;
+      return '<text x="' + x + '" y="' + (H - 6) + '" font-size="10" fill="#94a3b8" text-anchor="middle">' + y + '</text>';
+    }).join('');
+    var dots = values.map(function(v, i){
+      var x = padL + (i / Math.max(values.length - 1, 1)) * plotW;
+      return '<circle cx="' + x + '" cy="' + yPos(v) + '" r="3.5" fill="' + color + '"/>';
+    }).join('');
+    return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="趋势图">' +
+      '<line x1="' + padL + '" y1="' + (padT + plotH) + '" x2="' + (padL + plotW) + '" y2="' + (padT + plotH) + '" stroke="#cbd5e1"/>' +
+      '<polyline points="' + pts.join(' ') + '" fill="none" stroke="' + color + '" stroke-width="2"/>' +
+      dots + labels +
+      '<text x="' + padL + '" y="12" font-size="9" fill="#94a3b8">' + esc(unit) + '</text></svg>';
+  }
+
+  function renderBarChart(years, values, color, unit){
+    var W = 440, H = 180, padL = 40, padR = 12, padT = 16, padB = 32;
+    var plotW = W - padL - padR, plotH = H - padT - padB;
+    var maxV = Math.max.apply(null, values.map(Math.abs)) * 1.12 || 1;
+    var barW = plotW / values.length * 0.55;
+    var bars = values.map(function(v, i){
+      var h = Math.abs(v) / maxV * plotH;
+      var x = padL + (i + 0.5) * (plotW / values.length) - barW / 2;
+      var y = padT + plotH - h;
+      var fill = v < 0 ? '#dc2626' : color;
+      return '<rect x="' + x + '" y="' + y + '" width="' + barW + '" height="' + h + '" rx="2" fill="' + fill + '"/>';
+    }).join('');
+    var labels = years.map(function(y, i){
+      var x = padL + (i + 0.5) * (plotW / values.length);
+      return '<text x="' + x + '" y="' + (H - 6) + '" font-size="10" fill="#94a3b8" text-anchor="middle">' + y + '</text>';
+    }).join('');
+    return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="柱状图">' +
+      '<line x1="' + padL + '" y1="' + (padT + plotH) + '" x2="' + (padL + plotW) + '" y2="' + (padT + plotH) + '" stroke="#cbd5e1"/>' +
+      bars + labels +
+      '<text x="' + padL + '" y="12" font-size="9" fill="#94a3b8">' + esc(unit) + '</text></svg>';
+  }
+
+  function renderFinance(c){
+    var fin = c.demoFinance;
+    var rows = fin.years.map(function(y, i){
+      return '<tr><td>' + y + '</td>' +
+        '<td class="num">' + fin.revenue[i].toFixed(2) + '</td>' +
+        '<td class="num">' + fin.profit[i].toFixed(2) + '</td>' +
+        '<td class="num">' + fin.margin[i].toFixed(2) + '%</td></tr>';
+    }).join('');
+
+    return '<span class="demo-badge">示例数据 · Demo</span>' +
+      '<div class="chart-row">' +
+      '<div class="chart-box"><h4>营业收入总计趋势</h4>' +
+      renderLineChart(fin.years, fin.revenue, '#2563eb', '亿元') + '</div>' +
+      '<div class="chart-box"><h4>利润趋势及利润率</h4>' +
+      renderBarChart(fin.years, fin.profit, '#059669', '亿元') + '</div>' +
+      '</div>' +
+      '<div class="section-card">' +
+      '<div class="section-card-title">财务数据表</div>' +
+      '<table class="fin-table"><thead><tr><th>年份</th><th>营业收入（亿元）</th><th>净利润（亿元）</th><th>利润率</th></tr></thead><tbody>' +
+      rows + '</tbody></table></div>';
+  }
+
+  function renderMonitor(c){
+    var items = DATA.demoMonitor.map(function(m){
+      return '<li><span class="monitor-date">' + esc(m.date) + '</span>' +
+        '<span class="monitor-type">' + esc(m.type) + '</span>' +
+        '<span class="monitor-title">' + esc(m.title.replace('京城环保', c.shortName.replace('（我方）', ''))) + '</span></li>';
+    }).join('');
+
+    return '<span class="demo-badge">示例数据 · Demo</span>' +
+      '<div class="section-card">' +
+      '<div class="section-card-title">招投标 / 舆情 / 专利动态</div>' +
+      '<ul class="monitor-list">' + items + '</ul></div>';
+  }
+
+  function renderFactory(c){
+    var rows = DATA.demoFactories.map(function(f){
+      return '<li><span class="loc">' + esc(f.province) + ' · ' + esc(f.city) + '</span>' +
+        '<span class="name">' + esc(f.name) + '</span>' +
+        '<span></span><span class="type">' + esc(f.type) + '</span></li>';
+    }).join('');
+
+    return '<span class="demo-badge">示例数据 · Demo</span>' +
+      '<div class="factory-map">🗺 工厂分布地图占位（Demo）</div>' +
+      '<div class="section-card">' +
+      '<div class="section-card-title">工厂 / 基地列表</div>' +
+      '<ul class="factory-list">' + rows + '</ul></div>';
+  }
+
+  function renderTabContent(){
+    var c = getCompany(state.company);
+    companyTitleEl.textContent = c.displayName;
+
+    var html = '';
+    if(state.tab === 'basic') html = renderBasic(c);
+    else if(state.tab === 'finance') html = renderFinance(c);
+    else if(state.tab === 'monitor') html = renderMonitor(c);
+    else if(state.tab === 'factory') html = renderFactory(c);
+    tabPanelEl.innerHTML = html;
+  }
+
+  function renderContentNav(){
+    contentSidebarEl.innerHTML =
+      '<div class="content-sidebar-title">内容目录</div>' +
+      TABS.map(function(t){
+        var cls = 'content-nav-item' + (t.id === state.tab ? ' active' : '');
+        return '<button type="button" class="' + cls + '" data-tab="' + t.id + '">' + t.label + '</button>';
+      }).join('');
+  }
+
+  function renderCompanyList(){
+    companyListEl.innerHTML = companies.map(function(c){
+      var cls = 'company-btn' + (c.id === state.company ? ' active' : '') + (c.isSelf ? ' self' : '');
+      return '<button type="button" class="' + cls + '" data-company="' + c.id + '">' + esc(c.shortName) + '</button>';
+    }).join('');
+  }
+
+  function updateUrl(){
+    var params = new URLSearchParams();
+    params.set('company', state.company);
+    params.set('tab', state.tab);
+    history.replaceState(null, '', '?' + params.toString());
+  }
+
+  function activate(opts){
+    if(opts.company && COMPANY_IDS.indexOf(opts.company) >= 0) state.company = opts.company;
+    if(opts.tab && TABS.some(function(t){ return t.id === opts.tab; })) state.tab = opts.tab;
+    renderCompanyList();
+    renderContentNav();
+    renderTabContent();
+    updateUrl();
+  }
+
+  function parseLegacyParams(params){
+    var company = params.get('company');
+    var tab = params.get('tab');
+
+    if(!company){
+      var legacyTab = tab;
+      if(legacyTab === 'self') { company = 'jcme'; tab = 'basic'; }
+      else if(legacyTab === 'finance') { company = 'jcme'; tab = 'finance'; }
+      else if(legacyTab === 'benchmark') { company = 'jcme'; tab = 'basic'; }
+      else if(legacyTab && legacyTab.indexOf('comp-') === 0){
+        company = legacyTab;
+        tab = 'basic';
+      }
+    }
+
+    if(company === 'self') company = 'jcme';
+    if(tab === 'self') tab = 'basic';
+    if(tab === 'report') tab = 'monitor';
+
+    if(!company || COMPANY_IDS.indexOf(company) < 0) company = 'jcme';
+    if(!tab || !TABS.some(function(t){ return t.id === tab; })) tab = 'basic';
+
+    return { company: company, tab: tab };
+  }
+
+  document.getElementById('company-list').addEventListener('click', function(e){
+    var btn = e.target.closest('[data-company]');
+    if(btn) activate({ company: btn.dataset.company });
+  });
+
+  document.getElementById('content-sidebar').addEventListener('click', function(e){
+    var btn = e.target.closest('[data-tab]');
+    if(btn) activate({ tab: btn.dataset.tab });
+  });
+
+  document.getElementById('search-btn').addEventListener('click', function(){
+    var q = document.getElementById('search-input').value.trim();
+    var scope = document.getElementById('search-scope').value;
+    if(!q){
+      alert('请输入搜索关键词（Demo 演示）');
+      return;
+    }
+    var matched = companies.filter(function(c){
+      var hay = c.displayName + ' ' + c.shortName + ' ' + c.mainBusiness + ' ' + c.mainProducts.join(' ');
+      if(scope === 'company') hay = c.displayName + ' ' + c.shortName;
+      if(scope === 'product') hay = c.mainProducts.join(' ');
+      if(scope === 'industry') hay = c.profile.industry;
+      return hay.indexOf(q) >= 0;
+    });
+    if(matched.length){
+      activate({ company: matched[0].id, tab: 'basic' });
+    } else {
+      alert('未找到匹配企业（Demo）：「' + q + '」');
+    }
+  });
+
+  document.getElementById('search-input').addEventListener('keydown', function(e){
+    if(e.key === 'Enter') document.getElementById('search-btn').click();
+  });
+
+  var init = parseLegacyParams(new URLSearchParams(window.location.search));
+  activate(init);
+})();
+</script>
+</body>
+</html>

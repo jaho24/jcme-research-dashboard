@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>工业观察看板 - 京城机电产业研究与市场分析平台</title>
+<link rel="stylesheet" href="../assets/subpage-layout.css">
+<link rel="stylesheet" href="../assets/subpage-nav.css">
+<style>
+/* 工业观察：左行业目录 + 右页签内容（参考产业政策界面） */
+.io-sidebar .sidebar-heading {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--slate-900);
+  padding: 18px 16px 12px;
+  border-bottom: 1px solid var(--slate-100);
+}
+.io-industry-list { list-style: none; padding: 8px 0 12px; }
+.io-industry-list li { margin: 0; }
+.io-industry-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--blue-600);
+  padding: 9px 16px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.io-industry-btn:hover { background: var(--slate-50); color: var(--blue-700); }
+.io-industry-btn.active {
+  background: var(--blue-50);
+  color: var(--blue-700);
+  font-weight: 600;
+}
+
+.io-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 480px;
+  padding: 0 !important;
+  overflow: hidden;
+}
+.io-tab-bar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--slate-200);
+  background: #fff;
+  flex-shrink: 0;
+}
+.io-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--slate-600);
+  cursor: pointer;
+  padding: 4px 0;
+}
+.io-tab::before {
+  content: '';
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid var(--slate-300, #cbd5e1);
+  border-radius: 3px;
+  flex-shrink: 0;
+  transition: background 0.15s, border-color 0.15s;
+}
+.io-tab.active { color: var(--blue-700); font-weight: 600; }
+.io-tab.active::before {
+  background: var(--blue-600);
+  border-color: var(--blue-600);
+  box-shadow: inset 0 0 0 2px #fff;
+}
+
+.io-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.io-item-list {
+  width: 260px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--slate-200);
+  overflow-y: auto;
+  background: var(--slate-50);
+}
+.io-item-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  border-bottom: 1px solid var(--slate-100);
+  background: transparent;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--slate-600);
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.io-item-btn:hover { background: #fff; color: var(--slate-800); }
+.io-item-btn.active {
+  background: #fff;
+  color: var(--blue-700);
+  font-weight: 500;
+  border-left: 3px solid var(--blue-600);
+  padding-left: 11px;
+}
+
+.io-detail {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 28px 28px;
+}
+.io-detail-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--slate-900);
+  line-height: 1.45;
+  margin-bottom: 14px;
+}
+.io-detail-title .prefix {
+  color: var(--slate-700);
+  font-weight: 600;
+}
+.io-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 16px;
+  font-size: 13px;
+  color: var(--slate-500);
+  margin-bottom: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--slate-200);
+}
+.io-meta-row .date {
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  color: var(--slate-500);
+}
+.io-meta-row .source-label { color: var(--slate-400); }
+.io-kw-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--slate-500);
+}
+.io-kw-row .kw-label { color: var(--slate-400); margin-right: 2px; }
+.io-kw-pill {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--blue-50);
+  color: var(--blue-700);
+  border: 1px solid var(--blue-200);
+}
+.io-content {
+  font-size: 14px;
+  color: var(--slate-700);
+  line-height: 1.85;
+}
+.io-content p { margin-bottom: 14px; }
+.io-content .sub-h {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--slate-800);
+  margin: 18px 0 10px;
+}
+.io-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--slate-400);
+  font-size: 13px;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .io-body { flex-direction: column; }
+  .io-item-list {
+    width: 100%;
+    max-height: 160px;
+    border-right: none;
+    border-bottom: 1px solid var(--slate-200);
+  }
+  .io-detail { padding: 16px; }
+  .io-detail-title { font-size: 17px; }
+}
+</style>
+</head>
+<body>
+<div class="subpage-with-nav">
+  <div id="platform-nav-mount" data-active="observe"></div>
+
+  <div class="subpage-wrap">
+  <header class="subpage-header">
+    <h1>工业观察</h1>
+    <p>聚焦机床、机器人、氢能等九大行业，汇总产业政策、行业动态与重大事件监测。</p>
+  </header>
+
+  <div class="subpage-body">
+    <nav class="subpage-sidebar io-sidebar" id="industryNav" aria-label="产业政策行业目录">
+      <div class="sidebar-heading">产业政策</div>
+      <ul class="io-industry-list" id="industryList"></ul>
+    </nav>
+
+    <main class="subpage-content io-panel" id="mainPanel" aria-live="polite">
+      <div class="io-tab-bar" role="tablist" aria-label="内容类型筛选">
+        <button type="button" class="io-tab" role="tab" data-tab="industry">行业动态</button>
+        <button type="button" class="io-tab" role="tab" data-tab="policy">政策</button>
+        <button type="button" class="io-tab" role="tab" data-tab="event">重大事件监测</button>
+      </div>
+      <div class="io-body" id="ioBody"></div>
+    </main>
+  </div>
+
+  <footer class="subpage-footer">京城机电产业研究与市场分析平台 · 工业观察</footer>
+  </div>
+</div>
+
+<script src="../assets/subpage-nav.js"></script>
+<script src="../assets/demo-data.js"></script>
+<script src="../assets/industrial-observation-data.js"></script>
+<script>
+(function () {
+  var DATA = (window.DEMO_DATA && window.DEMO_DATA.industrialObservation) || [];
+
+  var INDUSTRIES = [
+    '机床', '机器人', '液压', '氢能及气体储运装备',
+    '能源', '印刷', '环保', '增材制造', '其他'
+  ];
+
+  var TABS = [
+    { id: 'industry', label: '行业动态', prefix: '行业动态' },
+    { id: 'policy', label: '政策', prefix: '政策解读' },
+    { id: 'event', label: '重大事件监测', prefix: '重大事件' }
+  ];
+
+  var TYPE_PREFIX = { policy: '政策解读', industry: '行业动态', event: '重大事件' };
+
+  var state = { industry: '机床', tab: 'policy', itemId: null };
+
+  var industryListEl = document.getElementById('industryList');
+  var ioBodyEl = document.getElementById('ioBody');
+  var tabBarEl = document.querySelector('.io-tab-bar');
+
+  function esc(s) {
+    if (!s) return '';
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function formatTitle(title) {
+    var t = title.trim();
+    if (t.indexOf('《') === 0) return t;
+    return '《' + t + '》';
+  }
+
+  function formatDateTime(dateStr) {
+    if (!dateStr) return '—';
+    if (dateStr.length > 10) return dateStr;
+    return dateStr + ' 09:00';
+  }
+
+  function formatContent(text) {
+    if (!text) return '<p>暂无正文</p>';
+    var parts = text.split(/；(?=[^；]{8,})/);
+    if (parts.length <= 1) return '<p>' + esc(text) + '</p>';
+    return parts.map(function (p) {
+      p = p.trim();
+      if (/^[一二三四五六七八九十]+、/.test(p)) {
+        var m = p.match(/^([一二三四五六七八九十]+、[^\s，。；]+)(.*)/);
+        if (m) {
+          return '<div class="sub-h">' + esc(m[1]) + '</div><p>' + esc(m[2].trim()) + '</p>';
+        }
+      }
+      return '<p>' + esc(p) + '</p>';
+    }).join('');
+  }
+
+  function filterItems() {
+    return DATA.filter(function (it) {
+      return it.industry === state.industry && it.type === state.tab;
+    });
+  }
+
+  function renderIndustryNav() {
+    industryListEl.innerHTML = INDUSTRIES.map(function (name) {
+      var cls = name === state.industry ? 'io-industry-btn active' : 'io-industry-btn';
+      return '<li><button type="button" class="' + cls + '" data-industry="' + esc(name) + '">' + esc(name) + '</button></li>';
+    }).join('');
+  }
+
+  function renderTabs() {
+    tabBarEl.querySelectorAll('.io-tab').forEach(function (btn) {
+      btn.classList.toggle('active', btn.dataset.tab === state.tab);
+      btn.setAttribute('aria-selected', btn.dataset.tab === state.tab ? 'true' : 'false');
+    });
+  }
+
+  function renderDetail(item) {
+    var prefix = TYPE_PREFIX[item.type] || '政策解读';
+    var html =
+      '<article class="io-detail">' +
+        '<h2 class="io-detail-title"><span class="prefix">' + esc(prefix) + ' | </span>' + esc(formatTitle(item.title)) + '</h2>' +
+        '<div class="io-meta-row">' +
+          '<span class="date">' + esc(formatDateTime(item.date)) + '</span>' +
+          '<span><span class="source-label">来源：</span>' + esc(item.source) + '</span>' +
+        '</div>' +
+        '<div class="io-kw-row">' +
+          '<span class="kw-label">关键词：</span>' +
+          (item.keywords || []).map(function (k) {
+            return '<span class="io-kw-pill">' + esc(k) + '</span>';
+          }).join('') +
+        '</div>' +
+        '<div class="io-content">' + formatContent(item.content || item.summary) + '</div>' +
+        (item.url ? '<p style="margin-top:20px"><a class="btn-link" href="' + esc(item.url) + '" target="_blank" rel="noopener">查看原文 ↗</a></p>' : '') +
+      '</article>';
+    return html;
+  }
+
+  function renderBody() {
+    var items = filterItems();
+    if (!items.length) {
+      ioBodyEl.innerHTML = '<div class="io-empty">当前行业「' + esc(state.industry) + '」下暂无「' +
+        esc(TABS.find(function (t) { return t.id === state.tab; }).label) + '」类数据</div>';
+      state.itemId = null;
+      return;
+    }
+
+    var current = items.find(function (it) { return it.id === state.itemId; });
+    if (!current) {
+      current = items[0];
+      state.itemId = current.id;
+    }
+
+    var listHtml = items.map(function (it) {
+      var cls = it.id === state.itemId ? 'io-item-btn active' : 'io-item-btn';
+      return '<button type="button" class="' + cls + '" data-id="' + it.id + '" title="' + esc(it.title) + '">' + esc(it.title) + '</button>';
+    }).join('');
+
+    ioBodyEl.innerHTML =
+      '<div class="io-item-list" role="list">' + listHtml + '</div>' +
+      renderDetail(current);
+  }
+
+  function updateUrl() {
+    var params = new URLSearchParams();
+    params.set('industry', state.industry);
+    params.set('tab', state.tab);
+    if (state.itemId) params.set('item', String(state.itemId));
+    history.replaceState(null, '', '?' + params.toString());
+  }
+
+  function applyState() {
+    renderIndustryNav();
+    renderTabs();
+    renderBody();
+    updateUrl();
+  }
+
+  function selectIndustry(name) {
+    state.industry = name;
+    state.itemId = null;
+    applyState();
+  }
+
+  function selectTab(tabId) {
+    state.tab = tabId;
+    state.itemId = null;
+    applyState();
+  }
+
+  function selectItem(id) {
+    state.itemId = Number(id);
+    renderBody();
+    updateUrl();
+    ioBodyEl.querySelectorAll('.io-item-btn').forEach(function (btn) {
+      btn.classList.toggle('active', Number(btn.dataset.id) === state.itemId);
+    });
+  }
+
+  industryListEl.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-industry]');
+    if (btn) selectIndustry(btn.dataset.industry);
+  });
+
+  tabBarEl.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-tab]');
+    if (btn) selectTab(btn.dataset.tab);
+  });
+
+  ioBodyEl.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-id]');
+    if (btn) selectItem(btn.dataset.id);
+  });
+
+  function normalizeTab(raw) {
+    if (!raw) return 'policy';
+    var m = {
+      policy: 'policy', policies: 'policy',
+      industry: 'industry', enterprise: 'industry',
+      event: 'event', events: 'event'
+    };
+    return m[raw] || 'policy';
+  }
+
+  var params = new URLSearchParams(window.location.search);
+  var ind = params.get('industry');
+  var tab = params.get('tab');
+  var item = params.get('item');
+
+  if (ind && INDUSTRIES.indexOf(ind) >= 0) state.industry = ind;
+  state.tab = normalizeTab(tab);
+  if (item) {
+    var num = parseInt(item, 10);
+    if (!isNaN(num)) state.itemId = num;
+  }
+
+  applyState();
+})();
+</script>
+</body>
+</html>

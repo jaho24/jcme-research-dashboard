@@ -1,0 +1,110 @@
+/* 子页面统一顶部平台导航 | 白底蓝调 */
+:root {
+  --nav-blue-900: #0c2d6b;
+  --nav-blue-800: #13408f;
+  --nav-blue-700: #1a56b5;
+  --nav-blue-600: #2563eb;
+  --nav-blue-50: #eff6ff;
+  --nav-slate-600: #475569;
+  --nav-slate-800: #1e293b;
+  --nav-border: #d9e2ef;
+}
+
+.platform-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0 12px;
+  border-bottom: 1px solid var(--nav-border);
+  margin-bottom: 0;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: #fff;
+}
+
+.platform-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.platform-brand-logos {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.platform-brand-logo {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--nav-blue-800);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.platform-brand-logo.sub {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--nav-blue-600);
+  padding-left: 10px;
+  border-left: 1px solid var(--nav-border);
+}
+
+.platform-nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-wrap: wrap;
+}
+
+.platform-nav a {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--nav-slate-600);
+  padding: 8px 14px;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+
+.platform-nav a:hover {
+  color: var(--nav-blue-600);
+  background: var(--nav-blue-50);
+}
+
+.platform-nav a.active {
+  color: var(--nav-blue-700);
+  font-weight: 700;
+  border-bottom: 2px solid var(--nav-blue-600);
+  border-radius: 0;
+  padding-bottom: 6px;
+}
+
+/* 带导航的子页容器 */
+.subpage-with-nav {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px 48px;
+  background: #fff;
+  min-height: 100vh;
+}
+
+.subpage-with-nav .subpage-wrap {
+  max-width: none;
+  padding: 0;
+  background: transparent;
+}
+
+@media (max-width: 768px) {
+  .platform-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .platform-nav {
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+  }
+}
