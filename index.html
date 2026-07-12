@@ -454,7 +454,7 @@ button{font-family:inherit;cursor:pointer}
 
     <!-- 左：行业趋势 + 推荐 -->
     <div class="trend-column">
-    <div class="chart-panel clickable-panel" data-href="pages/行业趋势.html?industry=robot&amp;view=market" tabindex="0" role="link" aria-label="行业趋势，点击进入详情">
+    <div class="chart-panel clickable-panel" data-href="pages/行业趋势.html?industry=robot&amp;view=finance" tabindex="0" role="link" aria-label="行业趋势，点击进入详情">
       <div class="panel-head-row">
         <div class="sec-head"><span class="icon" aria-hidden="true"></span>行业趋势</div>
         <span class="goto-badge">点击查看详情</span>
@@ -766,7 +766,7 @@ button{font-family:inherit;cursor:pointer}
   var activeTrendKey = 'robot';
 
   function trendHref(key){
-    return 'pages/行业趋势.html?industry=' + (key || activeTrendKey) + '&view=market';
+    return 'pages/行业趋势.html?industry=' + (key || activeTrendKey) + '&view=finance';
   }
 
   function scaleY(val, maxVal, top, bottom){

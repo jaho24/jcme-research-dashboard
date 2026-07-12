@@ -61,15 +61,19 @@
   var INDUSTRY_DATA = window.COMPETE_BY_INDUSTRY || {};
   var ANALYSIS_DATA = window.COMPETE_ANALYSIS || {};
   var ROBOT_PROFILES = window.COMPETE_ROBOT_PROFILES || {};
+  var DEMO_FINANCE = window.COMPETE_DEMO_FINANCE || {};
+  var DEMO_MONITOR = window.COMPETE_DEMO_MONITOR || {};
+  var DEMO_FACTORIES = window.COMPETE_DEMO_FACTORIES || {};
 
   var TABS = [
     { id: 'basic', label: '基本情况' },
     { id: 'finance', label: '财务信息' },
-    { id: 'monitor', label: '业务监测' }
+    { id: 'monitor', label: '业务监测' },
+    { id: 'factories', label: '工厂分布' }
   ];
 
   var companies = [];
-  var state = { industry: 'robot', company: '', tab: 'basic' };
+  var state = { industry: 'robot', company: '', tab: 'basic', monitorSub: 'annual' };
 
   var companyListEl = document.getElementById('company-list');
   var companyTitleEl = document.getElementById('company-title');
@@ -108,6 +112,15 @@
         if(base) base = Object.assign({}, base);
       }
       if(!base) return null;
+      if(DEMO_FINANCE[id]){
+        base.demoFinance = Object.assign({}, DEMO_FINANCE[id], base.demoFinance || {});
+      }
+      if(DEMO_MONITOR[id]){
+        base.demoMonitor = Object.assign({}, DEMO_MONITOR[id], base.demoMonitor || {});
+      }
+      if(DEMO_FACTORIES[id]){
+        base.demoFactories = Object.assign({}, DEMO_FACTORIES[id], base.demoFactories || {});
+      }
       base.shortName = meta.name || base.shortName;
       base.analysis = ANALYSIS_DATA[id] || null;
       base.listMeta = meta;
@@ -174,7 +187,6 @@
       field('省份', p.province) +
       field('城市', p.city) +
       field('品牌', p.brand) +
-      field('联系电话', p.phone) +
       field('公司官网', p.website, true) +
       field('集团归属', p.groupAffiliation) +
       field('荣誉资质', p.honors);
@@ -199,96 +211,204 @@
     return html;
   }
 
-  function renderLineChart(years, values, color, unit){
-    var W = 440, H = 180, padL = 40, padR = 12, padT = 16, padB = 32;
-    var plotW = W - padL - padR, plotH = H - padT - padB;
-    var maxV = Math.max.apply(null, values.map(Math.abs)) * 1.15 || 1;
-    var minV = Math.min.apply(null, values);
-    var base = minV < 0 ? minV * 1.15 : 0;
-    var range = maxV - base;
-    function yPos(v){ return padT + plotH - ((v - base) / range) * plotH; }
-    var pts = values.map(function(v, i){
-      var x = padL + (i / Math.max(values.length - 1, 1)) * plotW;
-      return x + ',' + yPos(v);
-    });
-    var labels = years.map(function(y, i){
-      var x = padL + (i / Math.max(years.length - 1, 1)) * plotW;
-      return '<text x="' + x + '" y="' + (H - 6) + '" font-size="10" fill="#94a3b8" text-anchor="middle">' + y + '</text>';
-    }).join('');
-    var dots = values.map(function(v, i){
-      var x = padL + (i / Math.max(values.length - 1, 1)) * plotW;
-      return '<circle cx="' + x + '" cy="' + yPos(v) + '" r="3.5" fill="' + color + '"/>';
-    }).join('');
-    return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="趋势图">' +
-      '<line x1="' + padL + '" y1="' + (padT + plotH) + '" x2="' + (padL + plotW) + '" y2="' + (padT + plotH) + '" stroke="#cbd5e1"/>' +
-      '<polyline points="' + pts.join(' ') + '" fill="none" stroke="' + color + '" stroke-width="2"/>' +
-      dots + labels +
-      '<text x="' + padL + '" y="12" font-size="9" fill="#94a3b8">' + esc(unit) + '</text></svg>';
+  function fmtNum(n){
+    if(n == null || n === '—') return '—';
+    return Number(n).toLocaleString('zh-CN');
   }
 
-  function renderBarChart(years, values, color, unit){
-    var W = 440, H = 180, padL = 40, padR = 12, padT = 16, padB = 32;
+  function renderRevenueBarChart(chart){
+    var years = chart.years, values = chart.values;
+    var W = 480, H = 200, padL = 52, padR = 16, padT = 24, padB = 36;
     var plotW = W - padL - padR, plotH = H - padT - padB;
-    var maxV = Math.max.apply(null, values.map(Math.abs)) * 1.12 || 1;
+    var maxV = Math.max.apply(null, values) * 1.08 || 1;
     var barW = plotW / values.length * 0.55;
     var bars = values.map(function(v, i){
-      var h = Math.abs(v) / maxV * plotH;
+      var h = v / maxV * plotH;
       var x = padL + (i + 0.5) * (plotW / values.length) - barW / 2;
       var y = padT + plotH - h;
-      var fill = v < 0 ? '#dc2626' : color;
-      return '<rect x="' + x + '" y="' + y + '" width="' + barW + '" height="' + h + '" rx="2" fill="' + fill + '"/>';
+      return '<rect x="' + x + '" y="' + y + '" width="' + barW + '" height="' + h + '" fill="#1a3a78"/>';
     }).join('');
     var labels = years.map(function(y, i){
-      var x = padL + (i + 0.5) * (plotW / values.length);
-      return '<text x="' + x + '" y="' + (H - 6) + '" font-size="10" fill="#94a3b8" text-anchor="middle">' + y + '</text>';
+      var x = padL + (i + 0.5) * (plotW / years.length);
+      return '<text x="' + x + '" y="' + (H - 8) + '" font-size="9" fill="#64748b" text-anchor="middle">' + y + '</text>';
     }).join('');
-    return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="柱状图">' +
+    var grid = '';
+    for(var g = 0; g <= 4; g++){
+      var gy = padT + plotH - (g / 4) * plotH;
+      var gv = Math.round(maxV * g / 4);
+      grid += '<line x1="' + padL + '" y1="' + gy + '" x2="' + (padL + plotW) + '" y2="' + gy + '" stroke="#e2e8f0" stroke-dasharray="3,3"/>' +
+        '<text x="' + (padL - 6) + '" y="' + (gy + 3) + '" font-size="8" fill="#94a3b8" text-anchor="end">' + gv.toLocaleString('zh-CN') + '</text>';
+    }
+    return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="营业收入趋势">' +
+      grid +
       '<line x1="' + padL + '" y1="' + (padT + plotH) + '" x2="' + (padL + plotW) + '" y2="' + (padT + plotH) + '" stroke="#cbd5e1"/>' +
       bars + labels +
-      '<text x="' + padL + '" y="12" font-size="9" fill="#94a3b8">' + esc(unit) + '</text></svg>';
+      '<text x="' + padL + '" y="14" font-size="9" fill="#64748b">营业收入总计(千元)</text></svg>';
+  }
+
+  function renderProfitDualChart(chart){
+    var years = chart.years, profits = chart.netProfit, margins = chart.margin;
+    var W = 480, H = 200, padL = 52, padR = 44, padT = 24, padB = 36;
+    var plotW = W - padL - padR, plotH = H - padT - padB;
+    var minP = Math.min.apply(null, profits), maxP = Math.max.apply(null, profits);
+    var pRange = maxP - minP || 1;
+    var minM = Math.min.apply(null, margins), maxM = Math.max.apply(null, margins);
+    var mRange = maxM - minM || 1;
+    var zeroY = padT + plotH - ((0 - minP) / pRange) * plotH;
+    var barW = plotW / profits.length * 0.5;
+    var bars = profits.map(function(v, i){
+      var x = padL + (i + 0.5) * (plotW / profits.length) - barW / 2;
+      var y, h, fill = v < 0 ? '#dc2626' : '#1a3a78';
+      if(v >= 0){
+        y = zeroY - (v / pRange) * plotH;
+        h = (v / pRange) * plotH;
+      } else {
+        y = zeroY;
+        h = (-v / pRange) * plotH;
+      }
+      return '<rect x="' + x + '" y="' + y + '" width="' + barW + '" height="' + Math.max(h, 1) + '" fill="' + fill + '"/>';
+    }).join('');
+    var linePts = margins.map(function(m, i){
+      var x = padL + (i + 0.5) * (plotW / margins.length);
+      var y = padT + plotH - ((m - minM) / mRange) * plotH;
+      return x + ',' + y;
+    }).join(' ');
+    var dots = margins.map(function(m, i){
+      var x = padL + (i + 0.5) * (plotW / margins.length);
+      var y = padT + plotH - ((m - minM) / mRange) * plotH;
+      return '<circle cx="' + x + '" cy="' + y + '" r="3.5" fill="#fff" stroke="#e91e8c" stroke-width="2"/>';
+    }).join('');
+    var yearLabels = years.map(function(y, i){
+      if(i % 2 !== 0 && years.length > 8) return '';
+      var x = padL + (i + 0.5) * (plotW / years.length);
+      return '<text x="' + x + '" y="' + (H - 8) + '" font-size="9" fill="#64748b" text-anchor="middle">' + y + '</text>';
+    }).join('');
+    var mGrid = '';
+    for(var g = 0; g <= 4; g++){
+      var gy = padT + plotH - (g / 4) * plotH;
+      var mv = minM + mRange * g / 4;
+      mGrid += '<text x="' + (W - padR + 8) + '" y="' + (gy + 3) + '" font-size="8" fill="#e91e8c" text-anchor="start">' + mv.toFixed(0) + '%</text>';
+    }
+    return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="利润趋势与利润率">' +
+      '<line x1="' + padL + '" y1="' + zeroY + '" x2="' + (padL + plotW) + '" y2="' + zeroY + '" stroke="#e2e8f0" stroke-dasharray="3,3"/>' +
+      '<line x1="' + padL + '" y1="' + (padT + plotH) + '" x2="' + (padL + plotW) + '" y2="' + (padT + plotH) + '" stroke="#cbd5e1"/>' +
+      bars +
+      '<polyline points="' + linePts + '" fill="none" stroke="#e91e8c" stroke-width="2"/>' +
+      dots + yearLabels + mGrid +
+      '<text x="' + padL + '" y="14" font-size="9" fill="#64748b">净利润(千元)</text>' +
+      '<text x="' + (W - padR) + '" y="14" font-size="9" fill="#e91e8c" text-anchor="end">净利润率(%)</text></svg>';
   }
 
   function renderFinance(c){
     var fin = c.demoFinance;
-    if(!fin || !fin.years || !fin.revenue){
-      return '<div class="section-card">' +
-        '<div class="section-card-title">财务信息</div>' +
+    if(!fin || !fin.table || !fin.table.length){
+      return '<div class="module-card">' +
+        '<div class="module-head"><h3>财务信息</h3></div>' +
         '<div class="empty-state">报告注明：部分企业虽为上市公司，当前 Demo 环境未接入实时财务接口。<br>可结合年报披露及 MOSS 360 透视中的经营、融资与股权信号综合研判。</div></div>';
     }
-    var rows = fin.years.map(function(y, i){
-      return '<tr><td>' + y + '</td>' +
-        '<td class="num">' + fin.revenue[i].toFixed(2) + '</td>' +
-        '<td class="num">' + fin.profit[i].toFixed(2) + '</td>' +
-        '<td class="num">' + fin.margin[i].toFixed(2) + '%</td></tr>';
+    var rows = fin.table.map(function(r){
+      return '<tr>' +
+        '<td>' + esc(r.year) + '</td>' +
+        '<td class="num">' + fmtNum(r.revenue) + '</td>' +
+        '<td class="num">' + fmtNum(r.totalProfit) + '</td>' +
+        '<td class="num">' + fmtNum(r.netProfit) + '</td>' +
+        '<td class="num">' + fmtNum(r.totalAssets) + '</td>' +
+        '<td class="num">' + fmtNum(r.totalLiabilities) + '</td>' +
+        '<td class="num">' + (r.margin != null ? r.margin.toFixed(2) + '%' : '—') + '</td></tr>';
     }).join('');
-
-    return '<span class="demo-badge">示例数据 · Demo</span>' +
+    return '<div class="module-card finance-module">' +
+      '<div class="module-head">' +
+      '<h3>财务信息 <span class="demo-badge-inline">示例数据 · Demo</span></h3>' +
+      '<span class="module-meta">币种：' + esc(fin.currency || '人民币') + '</span></div>' +
+      '<div class="finance-body">' +
+      '<div class="finance-main">' +
       '<div class="chart-row">' +
-      '<div class="chart-box"><h4>营业收入总计趋势</h4>' +
-      renderLineChart(fin.years, fin.revenue, '#2563eb', '亿元') + '</div>' +
-      '<div class="chart-box"><h4>利润趋势及利润率</h4>' +
-      renderBarChart(fin.years, fin.profit, '#059669', '亿元') + '</div></div>' +
-      '<div class="section-card">' +
-      '<div class="section-card-title">财务数据表</div>' +
-      '<table class="fin-table"><thead><tr><th>年份</th><th>营业收入（亿元）</th><th>净利润（亿元）</th><th>利润率</th></tr></thead><tbody>' +
-      rows + '</tbody></table></div>';
+      '<div class="chart-box"><h4>营业收入总计趋势</h4>' + renderRevenueBarChart(fin.revenueChart) + '</div>' +
+      '<div class="chart-box"><h4>利润趋势与利润率</h4>' + renderProfitDualChart(fin.profitChart) + '</div></div>' +
+      '<div class="fin-table-wrap">' +
+      '<div class="fin-table-title">财务数据表</div>' +
+      '<table class="fin-table"><thead><tr>' +
+      '<th>年份</th><th>营业收入总计(千元)</th><th>利润总额(千元)</th><th>净利润(千元)</th>' +
+      '<th>资产总额(千元)</th><th>负债总额(千元)</th><th>净利润率(%)</th>' +
+      '</tr></thead><tbody>' + rows + '</tbody></table></div></div>' +
+      (fin.note ? '<aside class="finance-note"><div class="finance-note-label">注</div><p>' + esc(fin.note) + '</p></aside>' : '') +
+      '</div></div>';
+  }
+
+  function renderMonitorTable(rows, years, labels){
+    var head = '<th class="col-idx">序号</th><th>产品分类</th><th>数据类型</th>';
+    labels.forEach(function(y){ head += '<th class="num">' + y + '</th>'; });
+    head += '<th>计量单位</th>';
+    var body = rows.map(function(row, i){
+      var cls = row.highlight ? ' class="row-highlight"' : '';
+      var cells = '<td class="col-idx">' + (i + 1) + '</td>' +
+        '<td>' + esc(row.category) + '</td>' +
+        '<td>' + esc(row.dataType) + '</td>';
+      row.values.forEach(function(v){
+        cells += '<td class="num">' + esc(v === '—' || v == null ? '—' : (typeof v === 'number' ? v.toLocaleString('zh-CN') : v)) + '</td>';
+      });
+      cells += '<td>' + esc(row.unit) + '</td>';
+      return '<tr' + cls + '>' + cells + '</tr>';
+    }).join('');
+    return '<table class="monitor-table"><thead><tr>' + head + '</tr></thead><tbody>' + body + '</tbody></table>';
   }
 
   function renderMonitor(c){
-    var items = (c.analysis && c.analysis.monitor) ? c.analysis.monitor : [];
-    if(!items.length){
-      return '<div class="section-card">' +
-        '<div class="section-card-title">业务监测</div>' +
-        '<div class="empty-state">暂无结构化监测条目，请参见「基本情况」中的 360° 透视分析。</div></div>';
+    var mon = c.demoMonitor;
+    if(!mon || !mon.annual || !mon.annual.length){
+      return '<div class="module-card">' +
+        '<div class="module-head"><h3>业务监测</h3></div>' +
+        '<div class="empty-state">暂无结构化监测数据，请参见「基本情况」中的 360° 透视分析。</div></div>';
     }
-    var list = items.map(function(m){
-      return '<li><span class="monitor-date">' + esc(m.date) + '</span>' +
-        '<span class="monitor-type">' + esc(m.type) + '</span>' +
-        '<span class="monitor-title">' + esc(m.title) + '</span></li>';
+    var sub = state.monitorSub || 'annual';
+    var rows = sub === 'quarterly' ? (mon.quarterly || []) : mon.annual;
+    var labels = sub === 'quarterly' ? (mon.quarterLabels || []) : (mon.years || []);
+    return '<div class="module-card monitor-module">' +
+      '<div class="module-head"><h3>业务监测 <span class="demo-badge-inline">示例数据 · Demo</span></h3></div>' +
+      '<div class="monitor-toolbar">' +
+      '<div class="monitor-tabs" role="tablist">' +
+      '<button type="button" class="monitor-tab' + (sub === 'annual' ? ' active' : '') + '" data-monitor-sub="annual" role="tab">年度数据</button>' +
+      '<button type="button" class="monitor-tab' + (sub === 'quarterly' ? ' active' : '') + '" data-monitor-sub="quarterly" role="tab">季度数据' +
+      (sub === 'quarterly' ? ' <span class="demo-badge-inline">示例</span>' : '') + '</button></div>' +
+      '<button type="button" class="module-btn" disabled title="Demo 环境暂不支持导出">导出</button></div>' +
+      '<p class="monitor-source">' + esc(mon.sourceNote || '数据来源：MIR DATABANK') + '</p>' +
+      '<div class="monitor-table-wrap">' + renderMonitorTable(rows, mon.years, labels) + '</div>' +
+      '<div class="monitor-footer">共 ' + rows.length + ' 条 · 100 条/页</div></div>';
+  }
+
+  function renderFactories(c){
+    var fac = c.demoFactories;
+    if(!fac || !fac.rows || !fac.rows.length){
+      return '<div class="module-card">' +
+        '<div class="module-head"><h3>工厂分布</h3></div>' +
+        '<div class="empty-state">暂无工厂分布数据。</div></div>';
+    }
+    var title = fac.title || ((c.shortName || '') + '产能分布');
+    var rows = fac.rows.map(function(r, i){
+      var nameCell = r.name
+        ? '<span class="factory-link">' + esc(r.name) + '</span>'
+        : '—';
+      return '<tr>' +
+        '<td class="col-idx">' + (i + 1) + '</td>' +
+        '<td>' + nameCell + '</td>' +
+        '<td>' + esc(r.address) + '</td>' +
+        '<td>' + esc(r.status) + '</td>' +
+        '<td>' + esc(r.prodTime) + '</td>' +
+        '<td>' + esc(r.product) + '</td>' +
+        '<td>' + esc(r.industry) + '</td>' +
+        '<td class="num">' + esc(r.capacity) + '</td>' +
+        '<td>' + esc(r.unit) + '</td></tr>';
     }).join('');
-    return '<div class="section-card">' +
-      '<div class="section-card-title">招投标 / 变更 / 风险动态</div>' +
-      '<ul class="monitor-list">' + list + '</ul></div>';
+    return '<div class="module-card factory-module">' +
+      '<h3 class="factory-title">' + esc(title) + ' <span class="demo-badge-inline">示例数据 · Demo</span></h3>' +
+      '<div class="factory-toolbar">' +
+      '<button type="button" class="module-btn" disabled title="Demo 环境暂不支持导出">导出</button>' +
+      '<button type="button" class="module-btn module-btn-outline" disabled title="Demo 环境暂不支持">工厂分布图</button></div>' +
+      '<div class="factory-table-wrap">' +
+      '<table class="factory-table"><thead><tr>' +
+      '<th class="col-idx">序号</th><th>下属工厂</th><th>工厂地址</th><th>建设状态</th>' +
+      '<th>投产时间</th><th>主营产品</th><th>涉及行业</th><th>规划产能</th><th>产能单位</th>' +
+      '</tr></thead><tbody>' + rows + '</tbody></table></div></div>';
   }
 
   function renderTabContent(){
@@ -303,6 +423,7 @@
     if(state.tab === 'basic') html = renderBasic(c);
     else if(state.tab === 'finance') html = renderFinance(c);
     else if(state.tab === 'monitor') html = renderMonitor(c);
+    else if(state.tab === 'factories') html = renderFactories(c);
     tabPanelEl.innerHTML = html;
   }
 
@@ -350,6 +471,7 @@
     }
     var ids = companyIds();
     if(opts.company && ids.indexOf(opts.company) >= 0){
+      if(opts.company !== state.company) state.monitorSub = 'annual';
       state.company = opts.company;
     } else if(ids.indexOf(state.company) < 0){
       state.company = ids[0] || '';
@@ -394,6 +516,14 @@
   document.getElementById('content-sidebar').addEventListener('click', function(e){
     var btn = e.target.closest('[data-tab]');
     if(btn) activate({ tab: btn.dataset.tab });
+  });
+
+  document.getElementById('tab-panel').addEventListener('click', function(e){
+    var subBtn = e.target.closest('[data-monitor-sub]');
+    if(subBtn){
+      state.monitorSub = subBtn.dataset.monitorSub;
+      renderTabContent();
+    }
   });
 
   if(industryTabsEl){

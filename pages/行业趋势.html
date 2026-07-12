@@ -32,7 +32,7 @@
       <div class="nav-group-label">数据目录</div>
       <button type="button" class="nav-item active" data-view="overview">数据定义 / 首页概览</button>
       <button type="button" class="nav-item" data-view="chain">产业链图谱</button>
-      <button type="button" class="nav-item" data-view="market">市场规模数据</button>
+      <button type="button" class="nav-item" data-view="finance">上市公司财务数据</button>
       <button type="button" class="nav-item" data-view="hotspot">近期热点</button>
       <div class="nav-group-label" id="report-nav-group">深度报告</div>
       <a class="nav-item nav-item-link" id="robot-report-link" href="工业机器人行业战略洞察报告.html">工业机器人战略洞察报告</a>
@@ -47,13 +47,15 @@
 
 <script src="../assets/subpage-nav.js"></script>
 <script src="../assets/demo-data.js"></script>
+<script src="../assets/trend-finance-data.js"></script>
 <script src="../assets/industry-chain-data.js"></script>
 <script>
 (function(){
   var D = window.DEMO_DATA;
+  var FIN = window.TREND_FINANCE_DATA;
   var CHAIN = window.INDUSTRY_CHAIN_DATA;
   var contentEl = document.getElementById('content');
-  var state = { industry: 'robot', view: 'overview', period: 'annual', chainNode: null };
+  var state = { industry: 'robot', view: 'overview', period: 'annual', metric: 'revenue', hideValues: false, chainNode: null };
 
   var INDUSTRIES = {
     robot: { label: '工业机器人', short: '机器人' },
@@ -126,18 +128,63 @@
     return '<svg viewBox="0 0 ' + W + ' ' + H + '"><path d="' + area + '" fill="' + color + '" fill-opacity="0.12"/><polyline points="' + pts.join(' ') + '" fill="none" stroke="' + color + '" stroke-width="2"/>' + dots + labels + '</svg>';
   }
 
-  function renderMarketTable(table){
-    var ths = table.headers.map(function(h, i){
-      return '<th' + (i > 0 ? ' class="num"' : '') + '>' + h + '</th>';
-    }).join('');
-    var trs = table.rows.map(function(row){
+  function fmtFinanceNum(n){
+    return Number(n).toLocaleString('zh-CN');
+  }
+
+  function renderFinanceTable(years, rows){
+    var ths = '<th>指标名称</th>' + years.map(function(y){ return '<th class="num">' + y + '</th>'; }).join('');
+    var trs = rows.map(function(row){
+      var cls = row.isTotal ? ' class="total-row"' : '';
       var tds = '<td class="row-name">' + row.name + '</td>';
       row.values.forEach(function(v){
-        tds += '<td class="num">' + v + '</td>';
+        tds += '<td class="num">' + fmtFinanceNum(v) + '</td>';
       });
-      return '<tr>' + tds + '</tr>';
+      return '<tr' + cls + '>' + tds + '</tr>';
     }).join('');
-    return '<table class="market-table"><thead><tr>' + ths + '</tr></thead><tbody>' + trs + '</tbody></table>';
+    return '<table class="finance-table"><thead><tr>' + ths + '</tr></thead><tbody>' + trs + '</tbody></table>';
+  }
+
+  function renderStackedBarChart(years, rows, hideValues){
+    var W = 520, H = 280, padL = 52, padR = 16, padT = 24, padB = 44;
+    var plotW = W - padL - padR, plotH = H - padT - padB;
+    var segments = rows.filter(function(r){ return !r.isTotal; });
+    var totals = years.map(function(_, yi){
+      return segments.reduce(function(sum, row){ return sum + row.values[yi]; }, 0);
+    });
+    var maxV = Math.max.apply(null, totals) * 1.08;
+    var barW = Math.min(56, (plotW / years.length) * 0.55);
+    var groupW = plotW / years.length;
+    var svg = '';
+    var grid = '';
+    var ySteps = 7;
+    for(var g = 0; g <= ySteps; g++){
+      var gy = padT + (g / ySteps) * plotH;
+      var gv = Math.round(maxV * (1 - g / ySteps) / 1000) * 1000;
+      grid += '<line x1="' + padL + '" y1="' + gy + '" x2="' + (padL + plotW) + '" y2="' + gy + '" stroke="#e2e8f0" stroke-dasharray="3,3"/>';
+      if(g % 2 === 0) grid += '<text x="' + (padL - 6) + '" y="' + (gy + 3) + '" font-size="9" fill="#94a3b8" text-anchor="end">' + gv.toLocaleString('zh-CN') + '</text>';
+    }
+    years.forEach(function(y, yi){
+      var cx = padL + yi * groupW + groupW / 2;
+      var stackBottom = padT + plotH;
+      segments.forEach(function(row){
+        var v = row.values[yi];
+        if(!v) return;
+        var h = (v / maxV) * plotH;
+        var yPos = stackBottom - h;
+        svg += '<rect x="' + (cx - barW / 2) + '" y="' + yPos + '" width="' + barW + '" height="' + h + '" fill="' + row.color + '" rx="1"/>';
+        if(!hideValues && h >= 14){
+          svg += '<text x="' + cx + '" y="' + (yPos + h / 2 + 3) + '" font-size="7" fill="#fff" text-anchor="middle" font-weight="600">' + fmtFinanceNum(v) + '</text>';
+        }
+        stackBottom = yPos;
+      });
+      svg += '<text x="' + cx + '" y="' + (H - 10) + '" font-size="10" fill="#64748b" text-anchor="middle" transform="rotate(-25 ' + cx + ' ' + (H - 10) + ')">' + y + '</text>';
+    });
+    return '<svg class="finance-chart-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="堆叠柱状图">' +
+      grid +
+      '<line x1="' + padL + '" y1="' + padT + '" x2="' + padL + '" y2="' + (padT + plotH) + '" stroke="#cbd5e1"/>' +
+      '<line x1="' + padL + '" y1="' + (padT + plotH) + '" x2="' + (padL + plotW) + '" y2="' + (padT + plotH) + '" stroke="#cbd5e1"/>' +
+      svg + '</svg>';
   }
 
   function renderOverview(industry){
@@ -173,46 +220,69 @@
       '<div class="chart-cap"><span>单位：' + t.unit + '</span><span>来源：' + t.source + '</span></div></div>';
   }
 
-  function renderMarket(industry){
-    var t = D.trends[industry];
-    var table = t.tables[state.period];
-    var isDemo = state.period !== 'annual';
-    var periodLabels = { annual: '年度', quarterly: '季度', monthly: '月度' };
-    var tabs = ['annual', 'quarterly', 'monthly'].map(function(p){
-      var demo = p !== 'annual' ? ' <span class="demo-tag">示例</span>' : '';
-      return '<button type="button" class="period-tab' + (state.period === p ? ' active' : '') + '" data-period="' + p + '">' + periodLabels[p] + demo + '</button>';
+  function renderFinance(industry){
+    var fin = FIN[industry];
+    var indLabel = INDUSTRIES[industry].label;
+    var metricLabel = fin.metricLabels[state.metric];
+    var dataset = fin[state.period][state.metric];
+    var years = dataset.years;
+    var rows = dataset.rows;
+    var isDemo = state.period === 'quarterly' || dataset.demo;
+    var rowCount = rows.filter(function(r){ return !r.isTotal; }).length;
+
+    var periodTabs = ['annual', 'quarterly'].map(function(p){
+      var label = p === 'annual' ? '年度' : '季度';
+      var demo = p === 'quarterly' ? ' <span class="demo-tag">Demo</span>' : '';
+      return '<button type="button" class="period-tab' + (state.period === p ? ' active' : '') + '" data-period="' + p + '">' + label + demo + '</button>';
     }).join('');
 
-    var chartYears = state.period === 'annual' ? t.years : table.headers.slice(1);
-    var chartSeries = state.period === 'annual'
-      ? t.series
-      : table.rows.slice(0, 2).map(function(row, i){
-          return { name: row.name, color: i === 0 ? '#2563eb' : '#059669', values: row.values.map(Number) };
-        });
-    var chart = state.period === 'annual'
-      ? renderGroupedBarChart(chartYears, chartSeries)
-      : renderGroupedBarChart(chartYears, chartSeries);
-
-    var legend = chartSeries.map(function(s){
-      return '<span style="--c:' + s.color + '"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:' + s.color + ';margin-right:4px;vertical-align:middle"></span>' + s.name + '</span>';
+    var metricTabs = fin.metrics.map(function(m){
+      return '<button type="button" class="metric-tab' + (state.metric === m ? ' active' : '') + '" data-metric="' + m + '">' + fin.metricLabels[m] + '</button>';
     }).join('');
 
-    var demoNote = isDemo ? '<p class="note-box">季度/月度数据为 Demo 示例，年度数据来自公开行业报告。</p>' : '';
+    var chart = renderStackedBarChart(years, rows, state.hideValues);
+    var legend = rows.filter(function(r){ return !r.isTotal; }).map(function(r){
+      return '<span class="finance-legend-item"><i style="background:' + r.color + '"></i>' + r.name + '</span>';
+    }).join('');
 
-    return '<div class="content-title">' + t.label + ' — 市场规模数据</div>' +
-      '<div class="period-tabs" role="tablist">' + tabs + '</div>' +
-      '<div class="data-desc">' + t.description + ' 数据来源：' + t.source + '。</div>' +
-      demoNote +
-      '<div class="market-split">' +
-        '<div class="market-panel">' +
-          '<div class="market-panel-head"><h3>' + t.tableTitle + '</h3><span class="market-panel-meta">单位：' + t.unit + '</span></div>' +
-          '<div class="market-panel-body">' + renderMarketTable(table) + '</div>' +
+    var demoNote = isDemo ? '<span class="finance-demo-badge">示例数据 · Demo</span>' : '';
+
+    return '<div class="finance-view">' +
+      '<div class="finance-top">' +
+        '<div class="period-tabs finance-period-tabs" role="tablist">' + periodTabs + '</div>' +
+        '<div class="metric-tabs" role="tablist">' + metricTabs + '</div>' +
+      '</div>' +
+      '<div class="data-desc finance-desc">' + fin.description + ' 数据来源：' + fin.source + '。' + demoNote + '</div>' +
+      '<div class="finance-split">' +
+        '<div class="finance-panel">' +
+          '<div class="finance-panel-head">' +
+            '<div><h3>总体分析 - ' + metricLabel + '数据</h3>' +
+            '<div class="finance-panel-sub">数据来源：' + fin.source + ' · 单位：' + fin.unit + '</div></div>' +
+            '<div class="finance-toolbar">' +
+              '<button type="button" class="finance-btn-export">数据导出</button>' +
+              '<select class="finance-select" disabled><option>指标：已选中 ' + rowCount + ' 项</option></select>' +
+              '<select class="finance-select" disabled><option>时间：已选中 ' + years.length + ' 项</option></select>' +
+            '</div>' +
+          '</div>' +
+          '<div class="finance-panel-body">' + renderFinanceTable(years, rows) + '</div>' +
+          '<div class="finance-table-foot"><span>10 条/页</span><span class="finance-pagination">‹ 1 ›</span></div>' +
         '</div>' +
-        '<div class="market-panel">' +
-          '<div class="market-panel-head"><h3>' + t.tableTitle + ' — 柱状图</h3><span class="market-panel-meta">来源：' + t.source + '</span></div>' +
-          '<div class="market-panel-body">' + chart + '<div class="chart-legend">' + legend + '</div></div>' +
+        '<div class="finance-panel">' +
+          '<div class="finance-panel-head">' +
+            '<div><h3>总体分析 - 柱状图</h3>' +
+            '<div class="finance-panel-sub">数据来源：' + fin.source + ' · 单位：' + fin.unit + '</div></div>' +
+            '<div class="finance-toolbar">' +
+              '<select class="finance-select" disabled><option>指标：已选中 ' + rowCount + ' 项</option></select>' +
+              '<select class="finance-select" disabled><option>时间：已选中 ' + years.length + ' 项</option></select>' +
+              '<select class="finance-select" disabled><option>图表类型：柱状图</option></select>' +
+              '<button type="button" class="finance-btn-toggle' + (state.hideValues ? ' muted' : '') + '" data-toggle-values="1">' + (state.hideValues ? '显示数值' : '隐藏数值') + '</button>' +
+            '</div>' +
+          '</div>' +
+          '<div class="finance-panel-body finance-chart-body">' + chart + '<div class="finance-legend">' + legend + '</div></div>' +
         '</div>' +
-      '</div>';
+      '</div>' +
+      '<p class="finance-footnote">' + indLabel + ' · 上市公司财务数据汇总 · ' + fin.source + '</p>' +
+    '</div>';
   }
 
   function renderChainNodeItems(nodes, side){
@@ -332,7 +402,7 @@
     var html = '';
     switch(state.view){
       case 'overview': html = renderOverview(state.industry); break;
-      case 'market': html = renderMarket(state.industry); break;
+      case 'finance': html = renderFinance(state.industry); break;
       case 'chain': html = renderChain(state.industry); break;
       case 'hotspot': html = renderHotspot(state.industry); break;
     }
@@ -371,6 +441,19 @@
         render();
       });
     });
+    contentEl.querySelectorAll('[data-metric]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        state.metric = btn.dataset.metric;
+        render();
+      });
+    });
+    var toggleBtn = contentEl.querySelector('[data-toggle-values]');
+    if(toggleBtn){
+      toggleBtn.addEventListener('click', function(){
+        state.hideValues = !state.hideValues;
+        render();
+      });
+    }
     if(state.view === 'chain'){
       contentEl.querySelectorAll('[data-chain-node]').forEach(function(el){
         el.addEventListener('click', function(e){
@@ -420,7 +503,7 @@
 
   function setView(view){
     state.view = view;
-    if(view !== 'market') state.period = 'annual';
+    if(view !== 'finance'){ state.period = 'annual'; state.metric = 'revenue'; state.hideValues = false; }
     if(view !== 'chain') state.chainNode = null;
     syncUI();
     render();
@@ -438,7 +521,8 @@
   var ind = params.get('industry');
   var view = params.get('view');
   if(ind === 'robot' || ind === 'machine') state.industry = ind;
-  if(['overview', 'market', 'chain', 'hotspot'].indexOf(view) >= 0) state.view = view;
+  if(view === 'market') view = 'finance';
+  if(['overview', 'finance', 'chain', 'hotspot'].indexOf(view) >= 0) state.view = view;
   syncUI();
   render();
 })();

@@ -462,6 +462,277 @@
 .fin-table td.num { text-align: right; font-family: ui-monospace, Menlo, Consolas, monospace; }
 .fin-table tr:nth-child(even) td { background: var(--slate-50); }
 
+.demo-badge-inline {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--slate-500);
+  background: var(--slate-100);
+  border: 1px solid var(--slate-200);
+  padding: 1px 6px;
+  border-radius: 3px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.fin-kpi-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.fin-kpi {
+  flex: 1;
+  min-width: 180px;
+  background: var(--blue-50);
+  border: 1px solid var(--blue-100);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+}
+.fin-kpi-label {
+  display: block;
+  font-size: 11px;
+  color: var(--slate-500);
+  margin-bottom: 4px;
+}
+.fin-kpi-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--blue-700);
+}
+.fin-kpi-value.fin-kpi-text {
+  font-size: 14px;
+  font-weight: 600;
+}
+.fin-note {
+  font-size: 12px;
+  color: var(--slate-500);
+  line-height: 1.6;
+  margin: -8px 0 14px;
+  padding: 10px 12px;
+  background: var(--slate-50);
+  border-radius: 6px;
+  border-left: 3px solid var(--slate-300);
+}
+
+/* 三模块通用 */
+.module-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin-bottom: 16px;
+}
+.module-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--slate-100);
+}
+.module-head h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--slate-800);
+  margin: 0;
+}
+.module-meta {
+  font-size: 12px;
+  color: var(--slate-500);
+  white-space: nowrap;
+}
+.module-btn {
+  border: none;
+  background: var(--blue-600);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.module-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.module-btn-outline {
+  background: #fff;
+  color: var(--blue-600);
+  border: 1px solid var(--blue-600);
+}
+
+/* 财务信息 */
+.finance-body {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.finance-main { flex: 1; min-width: 0; }
+.finance-note {
+  width: 120px;
+  flex-shrink: 0;
+  background: var(--slate-50);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 10px;
+  font-size: 11px;
+  color: var(--slate-500);
+  line-height: 1.65;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  letter-spacing: 1px;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.finance-note-label {
+  font-weight: 700;
+  color: var(--slate-600);
+  margin-bottom: 8px;
+  writing-mode: horizontal-tb;
+}
+.finance-note p {
+  margin: 0;
+  flex: 1;
+}
+.fin-table-wrap { margin-top: 4px; }
+.fin-table-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--slate-700);
+  margin-bottom: 10px;
+}
+
+/* 业务监测 */
+.monitor-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.monitor-tabs {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.monitor-tab {
+  appearance: none;
+  border: none;
+  background: #fff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--slate-600);
+  padding: 7px 18px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+}
+.monitor-tab:hover { background: var(--slate-50); }
+.monitor-tab.active {
+  color: var(--blue-700);
+  background: var(--blue-50);
+  border-bottom-color: var(--blue-600);
+  font-weight: 600;
+}
+.monitor-source {
+  font-size: 12px;
+  color: var(--slate-500);
+  margin: 0 0 12px;
+}
+.monitor-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+.monitor-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  min-width: 720px;
+}
+.monitor-table th,
+.monitor-table td {
+  padding: 9px 10px;
+  border: 1px solid var(--border);
+  text-align: center;
+  white-space: nowrap;
+}
+.monitor-table th {
+  background: #f5f7fa;
+  font-weight: 600;
+  color: var(--slate-700);
+  font-size: 11px;
+}
+.monitor-table td.num { font-family: ui-monospace, Menlo, Consolas, monospace; }
+.monitor-table .col-idx { width: 48px; color: var(--slate-500); }
+.monitor-table tr.row-highlight td {
+  background: #fffbeb;
+  font-weight: 600;
+}
+.monitor-table tr.row-highlight td:first-child + td {
+  color: var(--blue-700);
+}
+.monitor-footer {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--slate-400);
+  text-align: right;
+}
+
+/* 工厂分布 */
+.factory-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--blue-800);
+  text-align: center;
+  margin: 0 0 14px;
+}
+.factory-toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding: 8px 12px;
+  background: var(--slate-50);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+.factory-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+.factory-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  min-width: 900px;
+}
+.factory-table th,
+.factory-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: middle;
+}
+.factory-table th {
+  background: #f5f7fa;
+  font-weight: 600;
+  color: var(--slate-600);
+  font-size: 11px;
+  border-bottom: 1px solid var(--border);
+}
+.factory-table .col-idx { width: 48px; text-align: center; color: var(--slate-500); }
+.factory-table td.num { text-align: right; font-family: ui-monospace, Menlo, Consolas, monospace; }
+.factory-link { color: var(--blue-600); cursor: default; }
+.factory-table tbody tr:hover td { background: var(--slate-50); }
+
 .monitor-list { list-style: none; }
 .monitor-list li {
   display: flex;
@@ -578,6 +849,13 @@
     padding: 10px 24px;
   }
   .profile-grid, .product-list, .chart-row, .analysis-grid { grid-template-columns: 1fr; }
+  .finance-body { flex-direction: column; }
+  .finance-note {
+    width: 100%;
+    writing-mode: horizontal-tb;
+    flex-direction: row;
+    gap: 8px;
+  }
   .factory-list li { grid-template-columns: 1fr; gap: 4px; }
   .factory-list .type { text-align: left; }
 }
