@@ -3,179 +3,161 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>主题报告看板 - 京城机电产业研究与市场分析平台</title>
+<title>主题报告 - 京城机电产业研究与市场分析平台</title>
 <link rel="stylesheet" href="../assets/subpage-layout.css">
 <link rel="stylesheet" href="../assets/subpage-nav.css">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg-primary:#f8fafc;--bg-surface:#fff;--bg-elevated:#f1f5f9;
-  --text-primary:#0f172a;--text-secondary:#475569;--text-muted:#64748b;
-  --border-color:#e2e8f0;--blue-50:#eff6ff;--blue-200:#bfdbfe;--blue-300:#93c5fd;
-  --blue-500:#3b82f6;--blue-600:#2563eb;--blue-700:#1d4ed8;--blue-800:#1e40af;
-  --purple-50:#faf5ff;--purple-500:#a855f7;--purple-600:#9333ea;
-  --green-50:#f0fdf4;--green-200:#bbf7d0;--green-500:#22c55e;--green-700:#15803d;
-  --amber-50:#fffbeb;--amber-500:#f59e0b;--amber-700:#b45309;
-}
-body{font-size:14px;line-height:1.6;color:var(--text-primary);background:var(--bg-primary);padding:0}
-.report-card{background:var(--bg-surface);border:0.5px solid var(--border-color);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 12px rgba(0,0,0,0.03)}
-.hero-header{background:linear-gradient(135deg,var(--blue-600) 0%,var(--purple-600) 100%);padding:24px 28px 20px;color:#fff;position:relative;overflow:hidden}
-.hero-header::before{content:'';position:absolute;top:-40%;right:-10%;width:300px;height:300px;background:radial-gradient(circle,rgba(255,255,255,0.08) 0%,transparent 70%);border-radius:50%}
-.hero-header::after{content:'';position:absolute;bottom:-30%;left:10%;width:200px;height:200px;background:radial-gradient(circle,rgba(255,255,255,0.05) 0%,transparent 70%);border-radius:50%}
-.hero-top{display:flex;align-items:center;gap:10px;margin-bottom:12px;position:relative;z-index:1}
-.hero-icon{width:32px;height:32px;background:rgba(255,255,255,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
-.hero-icon svg{width:18px;height:18px;fill:#fff}
-.hero-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;opacity:0.85}
-.hero-title{font-size:22px;font-weight:700;line-height:1.3;position:relative;z-index:1;margin-bottom:8px}
-.hero-meta{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;opacity:0.8;position:relative;z-index:1}
-.hero-meta span{display:inline-flex;align-items:center;gap:4px}
-.hero-meta svg{width:12px;height:12px;fill:currentColor;opacity:0.7}
-.tab-bar{display:flex;gap:2px;padding:4px 16px 0;background:var(--bg-elevated);border-bottom:0.5px solid var(--border-color)}
-.tab-btn{padding:10px 18px;font-size:13px;font-weight:500;color:var(--text-muted);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all 0.2s ease;user-select:none}
-.tab-btn:hover{color:var(--text-secondary)}
-.tab-btn.active{color:var(--blue-600);border-bottom-color:var(--blue-600);font-weight:600}
-.tab-content{display:none;padding:20px 24px 24px;animation:fadeIn 0.25s ease}
-.tab-content.active{display:block}
-@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-.source-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
-.src-tag{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:500}
-.src-tag.moss{background:var(--green-50);color:var(--green-700);border:0.5px solid var(--green-200)}
-.src-tag.web{background:var(--blue-50);color:var(--blue-700);border:0.5px solid var(--blue-200)}
-.src-tag svg{width:10px;height:10px;fill:currentColor}
-.md-body{font-size:14px;line-height:1.85;color:var(--text-primary)}
-.md-body h1{font-size:22px;font-weight:700;margin:0 0 16px;padding-bottom:12px;border-bottom:2px solid var(--blue-600);color:var(--text-primary);line-height:1.3}
-.md-body h2{font-size:17px;font-weight:600;margin:32px 0 14px;padding:10px 0 10px 16px;border-left:3px solid var(--blue-500);background:linear-gradient(90deg,var(--blue-50) 0%,transparent 100%);border-radius:0 6px 6px 0;color:var(--text-primary)}
-.md-body h3{font-size:15px;font-weight:600;margin:22px 0 10px;color:var(--text-primary)}
-.md-body p{margin:10px 0;color:var(--text-secondary);line-height:1.85}
-.md-body strong{color:var(--text-primary);font-weight:600}
-.md-body blockquote{margin:18px 0;padding:16px 20px;border-left:3px solid var(--purple-500);background:linear-gradient(135deg,var(--purple-50) 0%,var(--blue-50) 100%);border-radius:0 8px 8px 0;font-size:13.5px;color:var(--text-secondary);line-height:1.75}
-.md-body ul,.md-body ol{margin:12px 0;padding-left:24px}
-.md-body li{margin:6px 0;line-height:1.75;color:var(--text-secondary)}
-.md-body li::marker{color:var(--blue-500)}
-.md-body hr{border:none;height:1px;background:linear-gradient(90deg,transparent,var(--border-color),transparent);margin:28px 0}
-.md-body table{width:100%;border-collapse:separate;border-spacing:0;margin:18px 0;font-size:13px;border:0.5px solid var(--border-color);border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.04)}
-.md-body thead th{background:linear-gradient(180deg,var(--blue-50) 0%,var(--bg-elevated) 100%);font-weight:600;text-align:left;padding:12px 16px;color:var(--blue-800);border-bottom:1.5px solid var(--blue-200);font-size:12px;text-transform:uppercase;letter-spacing:0.4px;white-space:nowrap}
-.md-body tbody td{padding:11px 16px;border-bottom:0.5px solid var(--border-color);color:var(--text-secondary);vertical-align:top;line-height:1.6}
-.md-body tbody tr:last-child td{border-bottom:none}
-.md-body tbody tr:nth-child(even){background:var(--bg-elevated)}
-.md-body tbody tr:hover{background:var(--blue-50);transition:background 0.15s ease}
-.md-body tbody td:first-child{font-weight:600;color:var(--text-primary);white-space:nowrap}
-.md-body tbody tr:nth-child(even):hover{background:var(--blue-50)}
-.part-divider{height:1px;background:linear-gradient(90deg,transparent,var(--border-color),transparent);margin:32px 0}
-.policy-section{margin-bottom:20px}
-.policy-section-title{font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.policy-section-title .count{font-size:12px;font-weight:500;color:var(--text-muted);background:var(--bg-elevated);padding:2px 8px;border-radius:999px}
-.policy-list{list-style:none;display:flex;flex-direction:column;gap:8px}
-.policy-item{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border:0.5px solid var(--border-color);border-radius:8px;border-left:3px solid var(--blue-500);transition:all 0.15s ease;background:var(--bg-surface)}
-.policy-item:hover{border-color:var(--blue-300);box-shadow:0 2px 8px rgba(37,99,235,0.06)}
-.policy-item.approved{border-left-color:var(--green-500)}
-.policy-item.eligible{border-left-color:var(--amber-500)}
-.policy-item .p-name{font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:4px;line-height:1.4}
-.policy-item .p-meta{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--text-muted);align-items:center}
-.p-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500}
-.p-tag.dept{background:var(--blue-50);color:var(--blue-700)}
-.p-tag.money{background:var(--amber-50);color:var(--amber-700);font-family:ui-monospace,Menlo,monospace}
-.p-tag.status-approved{background:var(--green-50);color:var(--green-700)}
-.p-tag.status-eligible{background:var(--amber-50);color:var(--amber-700)}
-.loading-state{padding:20px 0}
-.loading-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;color:var(--text-muted);font-size:13px}
-.pulse-dot{width:8px;height:8px;border-radius:50%;background:var(--blue-500);animation:pulse 1.2s ease-in-out infinite}
-@keyframes pulse{0%,100%{opacity:0.4;transform:scale(0.9)}50%{opacity:1;transform:scale(1.1)}}
-.skeleton{display:flex;flex-direction:column;gap:10px}
-.sk-line{height:12px;border-radius:6px;background:linear-gradient(90deg,var(--bg-elevated) 25%,var(--bg-surface) 50%,var(--bg-elevated) 75%);background-size:200% 100%;animation:shimmer 1.5s ease-in-out infinite}
-@keyframes shimmer{to{background-position:-200% 0}}
-.sk-line.w-full{width:100%}.sk-line.w-90{width:90%}.sk-line.w-80{width:80%}.sk-line.w-70{width:70%}.sk-line.w-60{width:60%}
-.sk-block{height:80px;border-radius:8px;background:var(--bg-elevated);animation:shimmer 1.5s ease-in-out infinite;margin:8px 0}
-.empty-state{text-align:center;padding:40px 20px;color:var(--text-muted)}
-.empty-state svg{width:40px;height:40px;fill:var(--border-color);margin-bottom:12px}
-.empty-state p{font-size:13px}
-#widget-root{padding-top:0}
-</style>
+<link rel="stylesheet" href="../assets/theme-report-page.css">
 </head>
 <body>
+<header class="platform-nav-outer">
+  <div class="platform-nav-inner">
+    <div id="platform-nav-mount" data-active="report"></div>
+  </div>
+</header>
 <div class="subpage-with-nav">
-  <div id="platform-nav-mount" data-active="report"></div>
-  <div id="widget-root">
-  <div class="report-card">
-    <div class="hero-header">
-      <div class="hero-top"><div class="hero-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></div><span class="hero-label">MOSS AI Chief Strategy Analyst</span></div>
-      <div class="hero-title">数控机床国产替代战略研究</div>
-      <div class="hero-meta"><span><svg viewBox="0 0 24 24"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10z"/></svg>北京京城机电控股有限责任公司</span><span><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>产业研究</span></div>
-    </div>
-    <div class="tab-bar"><button class="tab-btn active" data-tab="report" onclick="switchTab('report')">深度战略分析报告</button><button class="tab-btn" data-tab="policy" onclick="switchTab('policy')">关联政策</button></div>
-    <div class="tab-content active" id="tab-report">
-      <div class="source-row"><span class="src-tag moss">MOSS 企业库</span><span class="src-tag moss">MOSS 财务库</span><span class="src-tag moss">MOSS 政策库</span><span class="src-tag web" style="background:#fffbeb;color:#92400e;border-color:#fde68a">示例报告 · 正式内容待补充</span></div>
-      <div class="md-body">
-        <h1>执行摘要</h1>
-        <p>本报告围绕"数控机床国产替代"主题，对<strong>北京京城机电控股有限责任公司</strong>的战略定位、行业环境、竞争格局和未来发展路径进行了示例性分析。当前为 Demo 占位内容，正式报告待客户提供后生成。</p>
-
-        <h2>一、我司现状深度诊断</h2>
-        <table>
-          <thead><tr><th>指标</th><th>2022年</th><th>2023年</th><th>2024年</th><th>同比变化</th></tr></thead>
-          <tbody>
-            <tr><td>营业收入（亿元）</td><td>12.5</td><td>15.8</td><td>19.2</td><td>+21.5%</td></tr>
-            <tr><td>净利润（亿元）</td><td>1.2</td><td>1.8</td><td>2.5</td><td>+38.9%</td></tr>
-            <tr><td>总资产（亿元）</td><td>28.0</td><td>32.5</td><td>38.0</td><td>+16.9%</td></tr>
-            <tr><td>研发投入占比</td><td>8.5%</td><td>9.2%</td><td>10.1%</td><td>+0.9pp</td></tr>
-            <tr><td>员工总数</td><td>1,850</td><td>2,100</td><td>2,450</td><td>+16.7%</td></tr>
-          </tbody>
-        </table>
-        <p>京城机电近年来保持较快增长，营收稳定在110-115亿元区间，2023年后扭亏为盈。与东方电气、上海电气等竞对相比，在首都装备制造领域具备国资背景与行业龙头地位。</p>
-
-        <h2>二、行业全景与趋势研判</h2>
-        <table>
-          <thead><tr><th>产业链环节</th><th>代表企业</th><th>市场规模</th><th>技术特征</th><th>与我司关系</th></tr></thead>
-          <tbody>
-            <tr><td>数控系统</td><td>发那科、西门子、科德数控</td><td>280亿元</td><td>高壁垒，封闭生态</td><td>核心攻关领域</td></tr>
-            <tr><td>伺服驱动</td><td>安川、汇川技术</td><td>150亿元</td><td>国产替代加速</td><td>战略合作</td></tr>
-            <tr><td>精密件加工</td><td>秦川机床、海天精工</td><td>420亿元</td><td>竞争激烈，同质化</td><td>直接竞争</td></tr>
-            <tr><td>五轴联动机床</td><td>科德数控、创世纪</td><td>95亿元</td><td>高增速，国产突破期</td><td>核心赛道</td></tr>
-            <tr><td>工业软件</td><td>华大九天、中望软件</td><td>200亿元</td><td>卡脖子领域</td><td>生态协同</td></tr>
-          </tbody>
-        </table>
-        <p>数控机床行业整体规模约2,800亿元，国产化率约45%，但高端数控机床国产化率不足15%，政策推动下国产替代空间巨大。产业政策持续加码，十四五规划明确将高端数控机床列为战略必争领域。技术演进呈现三大方向：智能化（AI+加工）、复合化（车铣复合）、绿色化（节能降耗）。</p>
-
-        <h2>三、竞争格局与我司定位</h2>
-        <p>当前行业竞争格局较为分散。京城机电在发电设备、智能制造及气体储运等战略领域具备差异化优势。建议重点关注机床国产替代、工业机器人智能化升级两大赛道。</p>
-
-        <h2>四、机会矩阵与风险预警</h2>
-        <p>核心机会在于国防军工、航空航天领域对国产高端机床的刚性需求，以及新能源汽车产能扩张带来的设备采购浪潮。主要风险包括：地缘政治导致的供应链中断风险、外资企业加速本地化布局带来的竞争加剧、以及技术人才短缺问题。建议优先布局航空航天、新能源汽车两大赛道，同时与高校共建联合实验室解决人才瓶颈。</p>
-
-        <h2>五、战略行动路线图</h2>
-        <table>
-          <thead><tr><th>时间维度</th><th>行动项</th><th>预期效果</th><th>资源需求</th></tr></thead>
-          <tbody>
-            <tr><td>短期（0-6月）</td><td>完成航空航天领域3家重点客户突破</td><td>新增订单5000万元</td><td>销售团队扩充</td></tr>
-            <tr><td>中期（6-18月）</td><td>发布新一代AI智能数控系统</td><td>技术指标达到国际95%</td><td>研发投入2亿元</td></tr>
-            <tr><td>长期（18-36月）</td><td>建设国产替代生态联盟</td><td>市场份额提升至15%</td><td>战略投资5亿元</td></tr>
-          </tbody>
-        </table>
+  <div class="subpage-wrap">
+    <header class="subpage-header theme-report-header">
+      <div class="subpage-header-text">
+        <h1>主题报告</h1>
+        <p>左侧选择报告条目，右侧在线预览全文；未上传文档点击后提示「暂未上传」。</p>
       </div>
+      <button type="button" class="theme-report-upload" id="report-upload-btn">上传文档</button>
+      <input type="file" id="report-upload-input" hidden accept=".pdf,.doc,.docx,.html,.htm,.md">
+    </header>
+
+    <div class="subpage-body">
+      <nav class="subpage-sidebar" id="report-list" aria-label="主题报告列表"></nav>
+      <main class="subpage-content report-preview-panel" id="report-preview" aria-live="polite"></main>
     </div>
-    <div class="tab-content" id="tab-policy">
-      <div class="policy-section">
-        <div class="policy-section-title">已获批政策 <span class="count">3</span></div>
-        <ul class="policy-list">
-          <li class="policy-item approved"><div><div class="p-name">高端数控机床关键技术攻关专项资金</div><div class="p-meta"><span class="p-tag status-approved">已获批</span><span class="p-tag dept">北京市科学技术委员会</span><span>2024</span><span class="p-tag money">800万元</span></div></div></li>
-          <li class="policy-item approved"><div><div class="p-name">智能制造试点示范项目</div><div class="p-meta"><span class="p-tag status-approved">已获批</span><span class="p-tag dept">工业和信息化部</span><span>2024</span><span class="p-tag money">500万元</span></div></div></li>
-          <li class="policy-item approved"><div><div class="p-name">专精特新"小巨人"企业奖励</div><div class="p-meta"><span class="p-tag status-approved">已获批</span><span class="p-tag dept">北京市经济和信息化局</span><span>2023</span></div></div></li>
-        </ul>
-      </div>
-      <div class="policy-section">
-        <div class="policy-section-title">可申报政策 <span class="count">4</span></div>
-        <ul class="policy-list">
-          <li class="policy-item eligible"><div><div class="p-name">国家重点研发计划"智能机器人"专项</div><div class="p-meta"><span class="p-tag status-eligible">可申报</span><span class="p-tag dept">科技部</span></div></div></li>
-          <li class="policy-item eligible"><div><div class="p-name">制造业高质量发展专项（技改方向）</div><div class="p-meta"><span class="p-tag status-eligible">可申报</span><span class="p-tag dept">北京市经济和信息化局</span></div></div></li>
-        </ul>
-      </div>
-    </div>
+
+    <footer class="subpage-footer">京城机电产业研究与市场分析平台 · 主题报告</footer>
   </div>
 </div>
-</div>
+<div class="report-toast" id="report-toast" role="status" aria-live="polite"></div>
+
 <script src="../assets/subpage-nav.js"></script>
+<script src="../assets/demo-data.js"></script>
 <script>
-function switchTab(n){var b=document.querySelectorAll('.tab-btn'),t=document.querySelectorAll('.tab-content');for(var i=0;i<b.length;i++)b[i].classList.toggle('active',b[i].getAttribute('data-tab')===n);for(var j=0;j<t.length;j++)t[j].classList.toggle('active',t[j].id==='tab-'+n);try{sessionStorage.setItem('dashboard.topic-report.tab',n)}catch(x){}}
-(function(){try{var s=sessionStorage.getItem('dashboard.topic-report.tab');if(s)switchTab(s)}catch(x){}})();
+(function(){
+  var reports = (window.DEMO_DATA && window.DEMO_DATA.recommendedReports) || [];
+  var listEl = document.getElementById('report-list');
+  var previewEl = document.getElementById('report-preview');
+  var toastEl = document.getElementById('report-toast');
+  var toastTimer;
+  var activeId = null;
+
+  function esc(s){
+    if(s == null) return '';
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function showToast(msg){
+    if(!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.classList.add('is-show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){
+      toastEl.classList.remove('is-show');
+    }, 2200);
+  }
+
+  function getReport(id){
+    for(var i = 0; i < reports.length; i++){
+      if(String(reports[i].id) === String(id)) return reports[i];
+    }
+    return reports[0] || null;
+  }
+
+  function resolveReportUrl(url){
+    if(!url || !String(url).trim()) return '';
+    var href = String(url).trim();
+    if(/^https?:\/\//i.test(href)) return href;
+    if(href.indexOf('pages/') === 0) return href.replace(/^pages\//, '');
+    if(href.indexOf('../') === 0) return href.replace(/^\.\.\//, '');
+    return href;
+  }
+
+  function renderList(){
+    if(!listEl) return;
+    listEl.innerHTML = reports.map(function(r){
+      var active = String(r.id) === String(activeId) ? ' active' : '';
+      return '<button type="button" class="report-list-item' + active + '" data-id="' + r.id + '">' +
+        '<div class="item-title">' + esc(r.title) + '</div>' +
+        '<div class="item-meta">' +
+          '<span class="item-tag">' + esc(r.author || '—') + '</span>' +
+          '<span class="item-tag date">' + esc(r.date) + '</span>' +
+        '</div></button>';
+    }).join('');
+
+    listEl.querySelectorAll('.report-list-item').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        selectReport(btn.dataset.id, true);
+      });
+    });
+  }
+
+  function renderPreview(report, showPendingToast){
+    if(!previewEl || !report) return;
+    var previewUrl = resolveReportUrl(report.url);
+    var hasUrl = !!previewUrl;
+    var head = '<div class="report-preview-head">' +
+      '<h2>' + esc(report.title) + '</h2>' +
+      '<span class="report-preview-meta">' + esc(report.author || '—') + ' · ' + esc(report.date) + '</span>';
+
+    if(hasUrl){
+      head += '<a class="report-preview-open" href="' + esc(previewUrl) + '" target="_blank" rel="noopener">新窗口打开</a>';
+    }
+    head += '</div>';
+
+    var body;
+    if(hasUrl){
+      body = '<div class="report-preview-body">' +
+        '<iframe class="report-preview-frame" title="' + esc(report.title) + '" src="' + esc(previewUrl) + '"></iframe>' +
+        '</div>';
+    } else {
+      body = '<div class="report-preview-body">' +
+        '<div class="report-preview-empty">' +
+          '<div class="empty-icon">📄</div>' +
+          '<h3>暂未上传</h3>' +
+          '<p>该报告尚未上传至平台，请通过「上传文档」补充后预览。</p>' +
+        '</div></div>';
+      if(showPendingToast) showToast('暂未上传');
+    }
+
+    previewEl.innerHTML = head + body;
+  }
+
+  function selectReport(id, showPendingToast){
+    activeId = id;
+    renderList();
+    renderPreview(getReport(id), showPendingToast);
+    var params = new URLSearchParams(window.location.search);
+    params.set('id', id);
+    history.replaceState(null, '', '?' + params.toString());
+  }
+
+  var params = new URLSearchParams(window.location.search);
+  var initialId = params.get('id');
+  if(!getReport(initialId) && reports.length) initialId = reports[0].id;
+  if(initialId) selectReport(initialId, false);
+
+  var uploadBtn = document.getElementById('report-upload-btn');
+  var uploadInput = document.getElementById('report-upload-input');
+  if(uploadBtn && uploadInput){
+    uploadBtn.addEventListener('click', function(){
+      uploadInput.click();
+    });
+    uploadInput.addEventListener('change', function(){
+      if(!uploadInput.files || !uploadInput.files.length) return;
+      showToast('「' + uploadInput.files[0].name + '」上传功能暂未开放');
+      uploadInput.value = '';
+    });
+  }
+})();
 </script>
 </body>
 </html>

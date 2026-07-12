@@ -9,8 +9,12 @@
 <link rel="stylesheet" href="../assets/trend-page.css">
 </head>
 <body>
+<header class="platform-nav-outer">
+  <div class="platform-nav-inner">
+    <div id="platform-nav-mount" data-active="trend"></div>
+  </div>
+</header>
 <div class="subpage-with-nav">
-  <div id="platform-nav-mount" data-active="trend"></div>
 
   <div class="subpage-wrap">
   <header class="subpage-header">
@@ -30,6 +34,8 @@
       <button type="button" class="nav-item" data-view="chain">产业链图谱</button>
       <button type="button" class="nav-item" data-view="market">市场规模数据</button>
       <button type="button" class="nav-item" data-view="hotspot">近期热点</button>
+      <div class="nav-group-label" id="report-nav-group">深度报告</div>
+      <a class="nav-item nav-item-link" id="robot-report-link" href="工业机器人行业战略洞察报告.html">工业机器人战略洞察报告</a>
     </nav>
 
     <main class="subpage-content" id="content" aria-live="polite"></main>
@@ -143,15 +149,27 @@
       return '<tr><td>' + r.join('</td><td>') + '</td></tr>';
     }).join('');
     var globalTh = t.global.headers.map(function(h){ return '<th>' + h + '</th>'; }).join('');
+    var reportBanner = industry === 'robot'
+      ? '<div class="report-entry-banner">' +
+          '<div class="report-entry-text">' +
+            '<strong>战略洞察报告</strong>' +
+            '<p>完整版行业研究：市场格局、竞争态势、产业链自主化、具身智能与京城机电战略建议。</p>' +
+          '</div>' +
+          '<a class="report-entry-btn" href="工业机器人行业战略洞察报告.html">阅读全文 →</a>' +
+        '</div>'
+      : '';
     return '<div class="content-title">' + t.label + ' — 首页概览</div>' +
       '<div class="content-meta"><span class="tag tag-blue">' + t.label + '</span><span class="content-date">来源：' + t.source + '</span></div>' +
+      reportBanner +
       '<div class="insight-box"><strong>数据定义：</strong>' + t.definition + '</div>' +
       '<p class="content-summary">' + t.description + '</p>' +
       '<div class="kpi-row">' + kpis + '</div>' +
       '<div class="content-section-title">全球市场</div>' +
       '<table class="std-table"><thead><tr>' + globalTh + '</tr></thead><tbody>' + globalRows + '</tbody></table>' +
       '<div class="content-section-title">' + t.chartTitle + '</div>' +
-      '<div class="chart-box">' + renderLineChart(t.years, t.series[0].values, t.series[0].color) +
+      '<div class="chart-box">' + (t.chartType === 'bar'
+        ? renderGroupedBarChart(t.years, t.series)
+        : renderLineChart(t.years, t.series[0].values, t.series[0].color)) +
       '<div class="chart-cap"><span>单位：' + t.unit + '</span><span>来源：' + t.source + '</span></div></div>';
   }
 
@@ -378,6 +396,11 @@
     document.querySelectorAll('#sidebar [data-view]').forEach(function(btn){
       btn.classList.toggle('active', btn.dataset.view === state.view);
     });
+    var reportGroup = document.getElementById('report-nav-group');
+    var reportLink = document.getElementById('robot-report-link');
+    var showReport = state.industry === 'robot';
+    if(reportGroup) reportGroup.hidden = !showReport;
+    if(reportLink) reportLink.hidden = !showReport;
   }
 
   function updateURL(){

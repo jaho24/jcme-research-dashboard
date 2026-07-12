@@ -18,11 +18,11 @@ window.DEMO_DATA = {
       { tag: '氢能', cls: 'tag-h2', title: '《中华人民共和国能源法》', url: 'https://www.spp.gov.cn/spp/fl/202411/t20241109_671654.shtml', external: true }
     ],
     industry: [
-      { tag: '机床', cls: 'tag-jc', title: '2025年工业母机行业营收突破1.6万亿，占全球三分之一', url: 'http://news.cyol.com/gb/keji/articles/2026-07/08/content_Q4WVd3hpM0.html', external: true },
-      { tag: '机床', cls: 'tag-jc', title: '五轴数控机床国产化率突破77%', url: 'https://app.myzaker.com/article/6a21147b8e9f0901714922a7', external: true },
-      { tag: '机器人', cls: 'tag-ny', title: '埃斯顿连续两个季度位列中国机器人市场第一', url: 'https://www.estun.com/news/484.html', external: true },
-      { tag: '机器人', cls: 'tag-ny', title: '2025年上半年工业机器人出货量超16.3万台，同比增长16%', url: 'https://www.forbeschina.com/technology/70496', external: true },
-      { tag: '氢能', cls: 'tag-h2', title: '《能源法》2025年1月1日正式施行，氢能纳入能源管理体系', url: 'https://www.nea.gov.cn/20250604/ec7606c39c084f5b82505b2b4bab81d6/c.html', external: true }
+      { tag: '机床', cls: 'tag-jc', title: '本周机床头条：来自沈阳机床、秦川集团、国测时栅、百超智能…', url: 'https://www.jc35.com/news/detail/95596.html', external: true },
+      { tag: '机床', cls: 'tag-jc', title: '北一机床超重型五轴龙门移动车铣复合机床项目提前交付', url: 'https://www.jc35.com/news/detail/94836.html', external: true },
+      { tag: '机床', cls: 'tag-jc', title: '通用技术沈阳机床第1000条组合产线正式交付', url: 'https://www.jc35.com/news/detail/95592.html', external: true },
+      { tag: '机床', cls: 'tag-jc', title: '汉江机床SGK74系列高精数控丝杠磨床入选工业母机创新产品典型案例', url: 'https://www.jc35.com/news/detail/95594.html', external: true },
+      { tag: '机床', cls: 'tag-jc', title: '通用技术国测时栅核心技术成果入选工业母机创新产品典型案例', url: 'https://www.jc35.com/news/detail/95593.html', external: true }
     ],
     enterprise: [
       { tag: '机床', cls: 'tag-jc', title: '科德数控产能规划大幅提升至500台', url: 'https://www.cls.cn/detail/1191015', external: true },
@@ -36,26 +36,25 @@ window.DEMO_DATA = {
   trends: {
     robot: {
       label: '工业机器人',
-      chartTitle: '产量与国产化率趋势',
+      chartType: 'bar',
+      chartTitle: '2019-2028E 行业市场规模',
       tableTitle: '中国工业机器人市场规模数据',
-      unit: '亿元 / 万套 / %',
-      source: 'IFR、中商产业研究院、GGII、MIR DATABANK',
-      definition: 'IFR 数据以"新装机量"和"保有量"为核心指标；中国销售额数据来自不同机构，存在口径差异（本体 vs 系统集成）。',
-      description: '2024 年中国装机量创历史新高，达 29.5 万台；国产化率从 2020 年约 28% 提升至 2024 年 57%；产量从 2020 年 36.6 万套增长至 2024 年 55.6 万套。',
-      years: ['2020', '2021', '2022', '2023', '2024'],
+      unit: '亿元',
+      source: '《2026年中国工业机器人行业市场白皮书》、IFR、中商产业研究院',
+      definition: '行业规模以工业机器人市场销售额（亿元）计，2026-2028 为预测值。',
+      reportHref: 'pages/工业机器人行业战略洞察报告.html',
+      description: '2023 年深度调整后，2025 年市场迎来关键转折：全年销量约 33.2 万台（同比 +13%），市场规模预计 660 亿元（+13.8%）。国产品牌份额首次突破 55%，中国市场占全球 45%，连续 12 年全球第一。',
+      years: ['2019', '2020', '2021', '2022', '2023', '2024', '2025', '2026E', '2027E', '2028E'],
+      highlightYear: '2025',
+      forecastFrom: 7,
       series: [
-        { name: '产量(万套)', color: '#059669', yAxis: 'left', values: [36.6, 40, 44.3, 48, 55.6] },
-        { name: '国产化率(%)', color: '#dc2626', yAxis: 'right', values: [28, 35, 42, 50, 57] }
+        { name: '行业规模(亿元)', color: '#64748b', highlightColor: '#dc2626', forecastColor: '#93c5fd', values: [362, 476, 535, 609, 540, 580, 660, 750, 855, 980] }
       ],
       tables: {
         annual: {
-          headers: ['指标名称', '2020', '2021', '2022', '2023', '2024', '2025E', '2026E'],
+          headers: ['指标名称', '2019', '2020', '2021', '2022', '2023', '2024', '2025', '2026E', '2027E', '2028E'],
           rows: [
-            { name: '新装机量（万台）', values: ['—', '—', '28.0', '27.6', '29.5', '32', '35'], forecastFrom: 5 },
-            { name: '产量（万套）', values: ['36.6', '—', '44.3', '—', '55.6', '60', '65'], forecastFrom: 5 },
-            { name: '销售额（亿元）', values: ['476.3', '—', '609.0', '725.4', '683', '750', '820'], forecastFrom: 5 },
-            { name: '全球占比', values: ['~50%', '—', '>50%', '51%', '54%', '55%', '56%'], forecastFrom: 5 },
-            { name: '国产化率', values: ['~28%', '—', '—', '—', '57%', '63%', '68%'], forecastFrom: 5 }
+            { name: '行业规模（亿元）', values: ['362', '476', '535', '609', '540', '580', '660', '750', '855', '980'], forecastFrom: 7 }
           ]
         },
         quarterly: {
@@ -84,33 +83,31 @@ window.DEMO_DATA = {
         ]
       },
       kpis: [
-        { label: '2024 装机量', value: '29.5', unit: '万台' },
-        { label: '国产化率', value: '57%', unit: '2024年' },
-        { label: '2024 产量', value: '55.6', unit: '万套' }
+        { label: '2025 市场规模', value: '660', unit: '亿元' },
+        { label: '2028E 预测', value: '980', unit: '亿元' },
+        { label: '2025 同比', value: '+13.8%', unit: '增长' }
       ]
     },
     machine: {
       label: '数控机床',
-      chartTitle: '产量与国产化率趋势',
+      chartType: 'bar',
+      chartTitle: '2019-2028E 行业市场规模',
       tableTitle: '中国数控机床市场规模数据',
-      unit: '亿元 / 万台 / %',
-      source: '中国机床工具工业协会、中商产业研究院、前瞻产业研究院、Gardner Intelligence',
-      definition: 'Gardner Intelligence 采用 54 国生产/消费口径；Grand View Research 采用广义市场收入口径；中国数据分为全行业（含工具、附件）和数控机床细分口径。',
-      description: '2024 年中国机床出口额全球第一，占全球出口 47.8%；贸易顺差扩大，进口下降、出口增长 7%；数控化率持续提升，但高端领域仍依赖进口。',
-      years: ['2019', '2021', '2022', '2023', '2024'],
+      unit: '亿元',
+      source: '格物致胜 Wintelligence、中商产业研究院',
+      definition: '行业规模以数控机床市场销售额（亿元）计，2026-2028 为预测值。',
+      description: '2019-2022 年随制造业投资扩张规模上行，2022-2024 年增速放缓；2025 年起在设备更新与高端化需求带动下，预计恢复约 10% 年化增长。',
+      years: ['2019', '2020', '2021', '2022', '2023', '2024', '2025', '2026E', '2027E', '2028E'],
+      highlightYear: '2025',
+      forecastFrom: 7,
       series: [
-        { name: '产量(万台)', color: '#059669', yAxis: 'left', values: [0, 27, 20.9, 22, 23] },
-        { name: '国产化率(%)', color: '#dc2626', yAxis: 'right', values: [52, 58, 62, 67, 71] }
+        { name: '行业规模(亿元)', color: '#64748b', highlightColor: '#dc2626', forecastColor: '#93c5fd', values: [3270, 3450, 3680, 3920, 4090, 4325, 4680, 5148, 5663, 6229] }
       ],
       tables: {
         annual: {
-          headers: ['指标名称', '2019', '2021', '2022', '2023', '2024', '2025E', '2026E'],
+          headers: ['指标名称', '2019', '2020', '2021', '2022', '2023', '2024', '2025', '2026E', '2027E', '2028E'],
           rows: [
-            { name: '市场规模（亿元）', values: ['3270', '—', '—', '4090', '4325', '4680', '4950'], forecastFrom: 5 },
-            { name: '国产化率', values: ['52%', '58%', '62%', '67%', '71%', '74%', '77%'], forecastFrom: 5 },
-            { name: '数控切削产量（万台）', values: ['—', '27.0', '20.9', '—', '—', '24', '26'], forecastFrom: 5 },
-            { name: '出口额（亿美元）', values: ['—', '—', '—', '—', '~227', '245', '260'], forecastFrom: 5 },
-            { name: '同比增速', values: ['—', '—', '—', '5.75%', '5.7%', '8.2%', '5.8%'], forecastFrom: 5 }
+            { name: '行业规模（亿元）', values: ['3270', '3450', '3680', '3920', '4090', '4325', '4680', '5148', '5663', '6229'], forecastFrom: 7 }
           ]
         },
         quarterly: {
@@ -136,9 +133,9 @@ window.DEMO_DATA = {
         ]
       },
       kpis: [
-        { label: '2024 市场规模', value: '4325', unit: '亿元' },
-        { label: '国产市占率', value: '71%', unit: '2024年' },
-        { label: '出口全球占比', value: '47.8%', unit: '2024年' }
+        { label: '2025 市场规模', value: '4680', unit: '亿元' },
+        { label: '2028E 预测', value: '6229', unit: '亿元' },
+        { label: '2025-2028E', value: '+10%', unit: 'CAGR' }
       ]
     }
   },
@@ -226,22 +223,37 @@ window.DEMO_DATA = {
 
   competitorDetails: [
     { name: '东方电气股份有限公司', code: '915101002051154851', scale: '中型企业', patents: 10, risk: '员工下降54.2%，股权出质较多', opportunity: '2025年底增资10.9%，招投标活跃' },
-    { name: '上海电气集团股份有限公司', code: '91310000759565082B', scale: '上市·外资', patents: 10, risk: '员工暴跌90.6%，股权出质97条', opportunity: '集团659家关联企业，数据集成需求大' },
-    { name: '沈阳机床股份有限公司', code: '91210106243406830Q', scale: '中型·上市·国有', patents: 1, risk: '高管频繁变动', opportunity: '2026年增资28.3%，产能扩张期' },
-    { name: '秦川机床工具集团股份公司', code: '9161000071007221XC', scale: '大型·上市', patents: 10, risk: '税务非正常户，行政处罚', opportunity: '创新能力较强，需谨慎接触' }
+    { name: '上海电气集团股份有限公司', code: '91310000759565082B', scale: '小型企业·上市·外资', patents: 10, risk: '员工暴跌90.6%，股权出质97条', opportunity: '集团659家关联企业，数据集成需求大' },
+    { name: '沈阳机床股份有限公司', code: '91210106243406830Q', scale: '中型企业·上市·国有', patents: 1, risk: '高管频繁变动', opportunity: '2026年增资28.3%，产能扩张期' },
+    { name: '秦川机床工具集团股份公司', code: '9161000071007221XC', scale: '大型企业·上市', patents: 10, risk: '税务非正常户，行政处罚', opportunity: '创新能力较强，需谨慎接触' }
   ],
 
   /* industrialObservation: 60条，见 industrial-observation-data.js（政策30 + 动态/事件30） */
 
   articles: [
     { id: 1, title: '数控机床国产替代战略研究', date: '2025/01/21', industry: '机床' },
-    { id: 2, title: '工业机器人产业链竞争格局分析', date: '2025/01/18', industry: '机器人' },
+    { id: 2, title: '工业机器人行业战略洞察报告', date: '2026/07', industry: '机器人', url: 'pages/工业机器人行业战略洞察报告.html' },
     { id: 3, title: '氢能装备产业发展路径与政策机遇', date: '2025/01/15', industry: '氢能' },
     { id: 4, title: '智能制造数字化转型实践案例汇编', date: '2025/01/12', industry: '机床' },
     { id: 5, title: '高端液压元件自主可控专题报告', date: '2025/01/08', industry: '液压' },
     { id: 6, title: '增材制造在航空航天领域应用前景', date: '2025/01/05', industry: '增材制造' },
     { id: 7, title: '北京市高精尖产业政策解读与申报指南', date: '2024/12/28', industry: '机床' },
     { id: 8, title: '工业母机"十五五"发展展望', date: '2024/12/22', industry: '机床' }
+  ],
+
+  recommendedReports: [
+    {
+      id: 1,
+      title: '京城机电数控机床国产替代五看三定战略分析报告',
+      author: '战略研究部',
+      date: '2025/01',
+      url: 'pages/主题报告-京城机电数控机床国产替代_五看三定战略分析报告.html'
+    },
+    { id: 2, title: '工业机器人行业战略洞察报告', author: '战略研究部', date: '2026/07' },
+    { id: 3, title: '氢能装备产业发展路径与政策机遇', author: '产业研究组', date: '2025/01' },
+    { id: 4, title: '智能制造数字化转型实践案例汇编', author: '市场分析组', date: '2025/01' },
+    { id: 5, title: '高端装备出海战略专题研究', author: '战略研究部', date: '2024/12' },
+    { id: 6, title: '工业母机"十五五"发展展望', author: '产业研究组', date: '2024/12' }
   ],
 
   trendHotspots: {

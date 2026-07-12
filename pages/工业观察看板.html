@@ -209,8 +209,12 @@
 </style>
 </head>
 <body>
+<header class="platform-nav-outer">
+  <div class="platform-nav-inner">
+    <div id="platform-nav-mount" data-active="observe"></div>
+  </div>
+</header>
 <div class="subpage-with-nav">
-  <div id="platform-nav-mount" data-active="observe"></div>
 
   <div class="subpage-wrap">
   <header class="subpage-header">
@@ -241,6 +245,7 @@
 <script src="../assets/subpage-nav.js"></script>
 <script src="../assets/demo-data.js"></script>
 <script src="../assets/industrial-observation-data.js"></script>
+<script src="../assets/jc35-industry-patch.js"></script>
 <script>
 (function () {
   var DATA = (window.DEMO_DATA && window.DEMO_DATA.industrialObservation) || [];

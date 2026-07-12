@@ -9,10 +9,21 @@
 <link rel="stylesheet" href="../assets/compete-page.css">
 </head>
 <body>
+<header class="platform-nav-outer">
+  <div class="platform-nav-inner">
+    <div id="platform-nav-mount" data-active="compete"></div>
+  </div>
+</header>
 <div class="compete-page">
-  <div id="platform-nav-mount" data-active="compete"></div>
 
   <div class="compete-toolbar">
+    <div class="toolbar-industry">
+      <span class="toolbar-companies-label">行业赛道</span>
+      <div class="industry-tabs" id="industry-tabs" role="tablist" aria-label="竞争分析行业">
+        <button type="button" class="industry-tab active" data-industry="robot" role="tab" aria-selected="true">工业机器人</button>
+        <button type="button" class="industry-tab" data-industry="machine" role="tab" aria-selected="false">机床</button>
+      </div>
+    </div>
     <div class="toolbar-search">
       <select id="search-scope" aria-label="搜索范围">
         <option value="all">全部</option>
@@ -37,37 +48,35 @@
     </div>
   </main>
 
-  <footer class="compete-footer">京城机电产业研究与市场分析平台 · 竞争分析</footer>
+  <footer class="compete-footer" id="compete-footer">数据来源：MOSS企业360透视 · 竞对企业分析（不含本方）</footer>
 </div>
 
 <script src="../assets/subpage-nav.js"></script>
 <script src="../assets/compete-profile-data.js"></script>
+<script src="../assets/compete-industry-data.js"></script>
+<script src="../assets/compete-analysis-detail.js"></script>
 <script>
 (function(){
-  var DATA = window.COMPETE_PROFILES;
-  var companies = DATA.companies;
+  var PROFILE_DATA = window.COMPETE_PROFILES || { companies: [] };
+  var INDUSTRY_DATA = window.COMPETE_BY_INDUSTRY || {};
+  var ANALYSIS_DATA = window.COMPETE_ANALYSIS || {};
+  var ROBOT_PROFILES = window.COMPETE_ROBOT_PROFILES || {};
 
   var TABS = [
     { id: 'basic', label: '基本情况' },
     { id: 'finance', label: '财务信息' },
-    { id: 'monitor', label: '业务监测' },
-    { id: 'factory', label: '工厂分布' }
+    { id: 'monitor', label: '业务监测' }
   ];
 
-  var COMPANY_IDS = companies.map(function(c){ return c.id; });
-  var state = { company: 'jcme', tab: 'basic' };
+  var companies = [];
+  var state = { industry: 'robot', company: '', tab: 'basic' };
 
   var companyListEl = document.getElementById('company-list');
   var companyTitleEl = document.getElementById('company-title');
   var contentSidebarEl = document.getElementById('content-sidebar');
   var tabPanelEl = document.getElementById('tab-panel');
-
-  function getCompany(id){
-    for(var i = 0; i < companies.length; i++){
-      if(companies[i].id === id) return companies[i];
-    }
-    return companies[0];
-  }
+  var footerEl = document.getElementById('compete-footer');
+  var industryTabsEl = document.getElementById('industry-tabs');
 
   function esc(s){
     if(s == null) return '—';
@@ -78,6 +87,41 @@
       .replace(/"/g, '&quot;');
   }
 
+  function getProfileById(id){
+    var list = PROFILE_DATA.companies || [];
+    for(var i = 0; i < list.length; i++){
+      if(list[i].id === id) return list[i];
+    }
+    return null;
+  }
+
+  function buildCompanies(industry){
+    var block = INDUSTRY_DATA[industry];
+    if(!block || !block.companies) return [];
+    return block.companies.map(function(meta){
+      var id = meta.id;
+      var base = null;
+      if(id.indexOf('robot-') === 0 && ROBOT_PROFILES[id]){
+        base = Object.assign({}, ROBOT_PROFILES[id]);
+      } else if(id.indexOf('comp-') === 0){
+        base = getProfileById(id);
+        if(base) base = Object.assign({}, base);
+      }
+      if(!base) return null;
+      base.shortName = meta.name || base.shortName;
+      base.analysis = ANALYSIS_DATA[id] || null;
+      base.listMeta = meta;
+      return base;
+    }).filter(function(c){ return c && !c.isSelf; });
+  }
+
+  function getCompany(id){
+    for(var i = 0; i < companies.length; i++){
+      if(companies[i].id === id) return companies[i];
+    }
+    return companies[0] || null;
+  }
+
   function field(label, value, isLink){
     var v = esc(value);
     if(isLink && value && value !== '—'){
@@ -86,8 +130,33 @@
     return '<div class="profile-field"><div class="label">' + esc(label) + '</div><div class="value">' + v + '</div></div>';
   }
 
+  function renderAnalysis(c){
+    var a = c.analysis;
+    if(!a) return '';
+    var tags = (a.tags || []).map(function(t){
+      return '<span class="analysis-tag ' + esc(t.type || 'info') + '">' + esc(t.label) + '</span>';
+    }).join('');
+    var blocks = (a.sections || []).map(function(sec){
+      var tone = sec.tone || 'info';
+      var items = (sec.items || []).map(function(it){
+        return '<li>' + esc(it) + '</li>';
+      }).join('');
+      return '<div class="analysis-block ' + tone + '">' +
+        '<div class="analysis-block-title">' + esc(sec.title) + '</div>' +
+        '<ul>' + items + '</ul></div>';
+    }).join('');
+    return '<div class="section-card analysis-card">' +
+      '<div class="analysis-card-head">' +
+      '<div class="analysis-card-title">360° 透视分析</div>' +
+      '<span class="analysis-source">MOSS企业360透视</span></div>' +
+      (a.summary ? '<p class="analysis-summary">' + esc(a.summary) + '</p>' : '') +
+      (tags ? '<div class="analysis-tags">' + tags + '</div>' : '') +
+      '<div class="analysis-grid">' + blocks + '</div></div>';
+  }
+
   function renderBasic(c){
-    var p = c.profile;
+    var html = renderAnalysis(c);
+    var p = c.profile || {};
     var left =
       field('公司全称', p.fullName) +
       field('法定代表人', p.legalPerson) +
@@ -110,22 +179,24 @@
       field('集团归属', p.groupAffiliation) +
       field('荣誉资质', p.honors);
 
-    var products = c.mainProducts.map(function(pr){
+    var products = (c.mainProducts || []).map(function(pr){
       return '<li>' + esc(pr) + '</li>';
     }).join('');
 
-    return '<div class="section-card">' +
+    html += '<div class="section-card">' +
       '<div class="section-card-title">公司概况</div>' +
-      '<div class="profile-grid">' + left + right + '</div>' +
-      '</div>' +
-      '<div class="section-card">' +
-      '<div class="section-card-title">主营业务</div>' +
-      '<p class="text-block">' + esc(c.mainBusiness) + '</p>' +
-      '</div>' +
-      '<div class="section-card">' +
-      '<div class="section-card-title">主要产品</div>' +
-      '<ul class="product-list">' + products + '</ul>' +
-      '</div>';
+      '<div class="profile-grid">' + left + right + '</div></div>';
+    if(c.mainBusiness){
+      html += '<div class="section-card">' +
+        '<div class="section-card-title">主营业务</div>' +
+        '<p class="text-block">' + esc(c.mainBusiness) + '</p></div>';
+    }
+    if(products){
+      html += '<div class="section-card">' +
+        '<div class="section-card-title">主要产品</div>' +
+        '<ul class="product-list">' + products + '</ul></div>';
+    }
+    return html;
   }
 
   function renderLineChart(years, values, color, unit){
@@ -179,6 +250,11 @@
 
   function renderFinance(c){
     var fin = c.demoFinance;
+    if(!fin || !fin.years || !fin.revenue){
+      return '<div class="section-card">' +
+        '<div class="section-card-title">财务信息</div>' +
+        '<div class="empty-state">报告注明：部分企业虽为上市公司，当前 Demo 环境未接入实时财务接口。<br>可结合年报披露及 MOSS 360 透视中的经营、融资与股权信号综合研判。</div></div>';
+    }
     var rows = fin.years.map(function(y, i){
       return '<tr><td>' + y + '</td>' +
         '<td class="num">' + fin.revenue[i].toFixed(2) + '</td>' +
@@ -191,8 +267,7 @@
       '<div class="chart-box"><h4>营业收入总计趋势</h4>' +
       renderLineChart(fin.years, fin.revenue, '#2563eb', '亿元') + '</div>' +
       '<div class="chart-box"><h4>利润趋势及利润率</h4>' +
-      renderBarChart(fin.years, fin.profit, '#059669', '亿元') + '</div>' +
-      '</div>' +
+      renderBarChart(fin.years, fin.profit, '#059669', '亿元') + '</div></div>' +
       '<div class="section-card">' +
       '<div class="section-card-title">财务数据表</div>' +
       '<table class="fin-table"><thead><tr><th>年份</th><th>营业收入（亿元）</th><th>净利润（亿元）</th><th>利润率</th></tr></thead><tbody>' +
@@ -200,41 +275,34 @@
   }
 
   function renderMonitor(c){
-    var items = DATA.demoMonitor.map(function(m){
+    var items = (c.analysis && c.analysis.monitor) ? c.analysis.monitor : [];
+    if(!items.length){
+      return '<div class="section-card">' +
+        '<div class="section-card-title">业务监测</div>' +
+        '<div class="empty-state">暂无结构化监测条目，请参见「基本情况」中的 360° 透视分析。</div></div>';
+    }
+    var list = items.map(function(m){
       return '<li><span class="monitor-date">' + esc(m.date) + '</span>' +
         '<span class="monitor-type">' + esc(m.type) + '</span>' +
-        '<span class="monitor-title">' + esc(m.title.replace('京城环保', c.shortName.replace('（我方）', ''))) + '</span></li>';
+        '<span class="monitor-title">' + esc(m.title) + '</span></li>';
     }).join('');
-
-    return '<span class="demo-badge">示例数据 · Demo</span>' +
-      '<div class="section-card">' +
-      '<div class="section-card-title">招投标 / 舆情 / 专利动态</div>' +
-      '<ul class="monitor-list">' + items + '</ul></div>';
-  }
-
-  function renderFactory(c){
-    var rows = DATA.demoFactories.map(function(f){
-      return '<li><span class="loc">' + esc(f.province) + ' · ' + esc(f.city) + '</span>' +
-        '<span class="name">' + esc(f.name) + '</span>' +
-        '<span></span><span class="type">' + esc(f.type) + '</span></li>';
-    }).join('');
-
-    return '<span class="demo-badge">示例数据 · Demo</span>' +
-      '<div class="factory-map">🗺 工厂分布地图占位（Demo）</div>' +
-      '<div class="section-card">' +
-      '<div class="section-card-title">工厂 / 基地列表</div>' +
-      '<ul class="factory-list">' + rows + '</ul></div>';
+    return '<div class="section-card">' +
+      '<div class="section-card-title">招投标 / 变更 / 风险动态</div>' +
+      '<ul class="monitor-list">' + list + '</ul></div>';
   }
 
   function renderTabContent(){
     var c = getCompany(state.company);
-    companyTitleEl.textContent = c.displayName;
-
+    if(!c){
+      tabPanelEl.innerHTML = '<div class="empty-state">请选择竞对企业</div>';
+      companyTitleEl.textContent = '竞争分析';
+      return;
+    }
+    companyTitleEl.textContent = c.displayName || c.shortName;
     var html = '';
     if(state.tab === 'basic') html = renderBasic(c);
     else if(state.tab === 'finance') html = renderFinance(c);
     else if(state.tab === 'monitor') html = renderMonitor(c);
-    else if(state.tab === 'factory') html = renderFactory(c);
     tabPanelEl.innerHTML = html;
   }
 
@@ -249,50 +317,73 @@
 
   function renderCompanyList(){
     companyListEl.innerHTML = companies.map(function(c){
-      var cls = 'company-btn' + (c.id === state.company ? ' active' : '') + (c.isSelf ? ' self' : '');
+      var cls = 'company-btn' + (c.id === state.company ? ' active' : '');
       return '<button type="button" class="' + cls + '" data-company="' + c.id + '">' + esc(c.shortName) + '</button>';
     }).join('');
   }
 
+  function renderIndustryTabs(){
+    if(!industryTabsEl) return;
+    industryTabsEl.querySelectorAll('.industry-tab').forEach(function(btn){
+      var on = btn.dataset.industry === state.industry;
+      btn.classList.toggle('active', on);
+      btn.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+  }
+
+  function companyIds(){
+    return companies.map(function(c){ return c.id; });
+  }
+
   function updateUrl(){
     var params = new URLSearchParams();
+    params.set('industry', state.industry);
     params.set('company', state.company);
     params.set('tab', state.tab);
     history.replaceState(null, '', '?' + params.toString());
   }
 
   function activate(opts){
-    if(opts.company && COMPANY_IDS.indexOf(opts.company) >= 0) state.company = opts.company;
+    if(opts.industry && INDUSTRY_DATA[opts.industry]){
+      state.industry = opts.industry;
+      companies = buildCompanies(state.industry);
+    }
+    var ids = companyIds();
+    if(opts.company && ids.indexOf(opts.company) >= 0){
+      state.company = opts.company;
+    } else if(ids.indexOf(state.company) < 0){
+      state.company = ids[0] || '';
+    }
     if(opts.tab && TABS.some(function(t){ return t.id === opts.tab; })) state.tab = opts.tab;
+    if(footerEl && INDUSTRY_DATA[state.industry]){
+      footerEl.textContent = '数据来源：' + (INDUSTRY_DATA[state.industry].sourceNote || 'MOSS企业360透视');
+    }
+    renderIndustryTabs();
     renderCompanyList();
     renderContentNav();
     renderTabContent();
     updateUrl();
   }
 
-  function parseLegacyParams(params){
+  function parseInitParams(params){
+    var industry = params.get('industry') || 'robot';
+    if(!INDUSTRY_DATA[industry]) industry = 'robot';
+    companies = buildCompanies(industry);
+    var ids = companyIds();
     var company = params.get('company');
-    var tab = params.get('tab');
-
-    if(!company){
-      var legacyTab = tab;
-      if(legacyTab === 'self') { company = 'jcme'; tab = 'basic'; }
-      else if(legacyTab === 'finance') { company = 'jcme'; tab = 'finance'; }
-      else if(legacyTab === 'benchmark') { company = 'jcme'; tab = 'basic'; }
-      else if(legacyTab && legacyTab.indexOf('comp-') === 0){
-        company = legacyTab;
-        tab = 'basic';
-      }
+    if(company === 'jcme' || company === 'self') company = ids[0];
+    if(!company || ids.indexOf(company) < 0){
+      var legacy = params.get('tab');
+      if(legacy && legacy.indexOf('comp-') === 0 && ids.indexOf(legacy) >= 0) company = legacy;
+      else if(legacy && legacy.indexOf('robot-') === 0 && ids.indexOf(legacy) >= 0) company = legacy;
+      else company = ids[0];
     }
-
-    if(company === 'self') company = 'jcme';
-    if(tab === 'self') tab = 'basic';
-    if(tab === 'report') tab = 'monitor';
-
-    if(!company || COMPANY_IDS.indexOf(company) < 0) company = 'jcme';
+    var tab = params.get('tab');
+    if(tab === 'self' || tab === 'report') tab = 'basic';
+    if(tab && tab.indexOf('comp-') === 0) tab = 'basic';
+    if(tab && tab.indexOf('robot-') === 0) tab = 'basic';
     if(!tab || !TABS.some(function(t){ return t.id === tab; })) tab = 'basic';
-
-    return { company: company, tab: tab };
+    return { industry: industry, company: company, tab: tab };
   }
 
   document.getElementById('company-list').addEventListener('click', function(e){
@@ -305,24 +396,33 @@
     if(btn) activate({ tab: btn.dataset.tab });
   });
 
+  if(industryTabsEl){
+    industryTabsEl.addEventListener('click', function(e){
+      var btn = e.target.closest('[data-industry]');
+      if(!btn) return;
+      activate({ industry: btn.dataset.industry, company: '', tab: 'basic' });
+    });
+  }
+
   document.getElementById('search-btn').addEventListener('click', function(){
     var q = document.getElementById('search-input').value.trim();
     var scope = document.getElementById('search-scope').value;
     if(!q){
-      alert('请输入搜索关键词（Demo 演示）');
+      alert('请输入搜索关键词');
       return;
     }
     var matched = companies.filter(function(c){
-      var hay = c.displayName + ' ' + c.shortName + ' ' + c.mainBusiness + ' ' + c.mainProducts.join(' ');
-      if(scope === 'company') hay = c.displayName + ' ' + c.shortName;
-      if(scope === 'product') hay = c.mainProducts.join(' ');
-      if(scope === 'industry') hay = c.profile.industry;
+      var p = c.profile || {};
+      var hay = (c.displayName || '') + ' ' + (c.shortName || '') + ' ' + (c.mainBusiness || '') + ' ' + (p.industry || '') + ' ' + (c.mainProducts || []).join(' ');
+      if(scope === 'company') hay = (c.displayName || '') + ' ' + (c.shortName || '');
+      if(scope === 'product') hay = (c.mainProducts || []).join(' ');
+      if(scope === 'industry') hay = p.industry || '';
       return hay.indexOf(q) >= 0;
     });
     if(matched.length){
       activate({ company: matched[0].id, tab: 'basic' });
     } else {
-      alert('未找到匹配企业（Demo）：「' + q + '」');
+      alert('当前赛道未找到匹配企业：「' + q + '」');
     }
   });
 
@@ -330,8 +430,7 @@
     if(e.key === 'Enter') document.getElementById('search-btn').click();
   });
 
-  var init = parseLegacyParams(new URLSearchParams(window.location.search));
-  activate(init);
+  activate(parseInitParams(new URLSearchParams(window.location.search)));
 })();
 </script>
 </body>

@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>北京京城机电控股有限责任公司 · 数控机床国产替代五看三定战略分析报告</title>
+<link rel="stylesheet" href="../assets/subpage-layout.css">
+<link rel="stylesheet" href="../assets/subpage-nav.css">
+<style>
+  :root {
+    --bg: #f8f9fb;
+    --surface: #ffffff;
+    --text-primary: #1a1d23;
+    --text-secondary: #4a5060;
+    --text-muted: #7c8293;
+    --border: #e2e5ec;
+    --blue-600: #2563eb;
+    --blue-800: #1e40af;
+    --blue-50: #eff6ff;
+    --green-600: #16a34a;
+    --green-50: #f0fdf4;
+    --amber-600: #d97706;
+    --amber-50: #fffbeb;
+    --red-600: #dc2626;
+    --red-50: #fef2f2;
+    --purple-600: #9333ea;
+    --purple-50: #faf5ff;
+    --teal-600: #0d9488;
+    --teal-50: #f0fdfa;
+    --radius: 10px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text-primary); line-height: 1.6; }
+  .report-page-inner { padding: 32px 24px; max-width: 1200px; margin: 0 auto; }
+  
+  /* Header */
+  .report-header { text-align: center; margin-bottom: 40px; padding-bottom: 24px; border-bottom: 2px solid var(--blue-600); }
+  .report-header h1 { font-size: 28px; font-weight: 700; color: var(--blue-800); margin-bottom: 8px; letter-spacing: -0.5px; }
+  .report-header .subtitle { font-size: 15px; color: var(--text-secondary); margin-bottom: 4px; }
+  .report-header .meta { font-size: 12px; color: var(--text-muted); }
+  
+  /* Executive Summary */
+  .exec-summary { background: linear-gradient(135deg, var(--blue-50) 0%, var(--purple-50) 100%); border-left: 4px solid var(--blue-600); border-radius: 0 var(--radius) var(--radius) 0; padding: 24px 28px; margin-bottom: 32px; }
+  .exec-summary h2 { font-size: 16px; font-weight: 700; color: var(--blue-800); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .exec-summary p { font-size: 14px; color: var(--text-secondary); line-height: 1.8; }
+  .exec-summary strong { color: var(--text-primary); font-weight: 600; }
+  
+  /* Section */
+  .section { margin-bottom: 36px; }
+  .section-title { font-size: 20px; font-weight: 700; color: var(--text-primary); margin-bottom: 18px; padding-left: 14px; border-left: 4px solid var(--blue-600); line-height: 1.3; }
+  .section-subtitle { font-size: 16px; font-weight: 600; color: var(--text-primary); margin: 20px 0 12px; }
+  
+  /* Grid */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 16px; }
+  @media (max-width: 900px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+  
+  /* Card */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
+  .card-accent { border-left: 3px solid var(--blue-600); }
+  .card-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 8px; }
+  .card-metric { font-size: 28px; font-weight: 700; color: var(--text-primary); line-height: 1.2; }
+  .card-metric.sm { font-size: 20px; }
+  .card-desc { font-size: 12px; color: var(--text-secondary); margin-top: 6px; line-height: 1.5; }
+  .card-tag { display: inline-block; font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 4px; margin-top: 8px; margin-right: 4px; }
+  
+  /* Table */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
+  .data-table th { background: var(--blue-50); color: var(--blue-800); font-weight: 600; text-align: left; padding: 10px 14px; border-bottom: 2px solid var(--blue-600); font-size: 12px; text-transform: uppercase; letter-spacing: 0.3px; }
+  .data-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text-secondary); vertical-align: top; }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: var(--blue-50); }
+  
+  /* Bar Chart */
+  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .bar-label { font-size: 12px; color: var(--text-secondary); width: 90px; flex-shrink: 0; text-align: right; font-weight: 500; }
+  .bar-track { flex: 1; height: 10px; background: #eef0f4; border-radius: 5px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 5px; transition: width 0.6s ease; }
+  .bar-val { font-size: 11px; color: var(--text-muted); width: 40px; flex-shrink: 0; font-weight: 600; }
+  
+  /* Timeline */
+  .timeline { display: flex; gap: 12px; margin: 16px 0; }
+  .timeline-phase { flex: 1; padding: 14px; border-radius: 8px; text-align: center; }
+  .timeline-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .timeline-time { font-size: 10px; font-weight: 600; margin-bottom: 6px; opacity: 0.8; }
+  .timeline-desc { font-size: 11px; line-height: 1.4; }
+  
+  /* Insight Box */
+  .insight-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin: 16px 0; box-shadow: var(--shadow); }
+  .insight-box.warning { border-left: 4px solid var(--amber-600); }
+  .insight-box.opportunity { border-left: 4px solid var(--green-600); }
+  .insight-box.risk { border-left: 4px solid var(--red-600); }
+  .insight-title { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .insight-text { font-size: 13px; color: var(--text-secondary); line-height: 1.7; }
+  
+  /* List */
+  .styled-list { list-style: none; padding: 0; margin: 10px 0; }
+  .styled-list li { position: relative; padding-left: 18px; margin-bottom: 8px; font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+  .styled-list li::before { content: ""; position: absolute; left: 0; top: 8px; width: 6px; height: 6px; border-radius: 50%; background: var(--blue-600); }
+  
+  /* Footer */
+  .report-footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center; font-size: 11px; color: var(--text-muted); }
+  
+  /* Print */
+  @media print {
+    body { padding: 16px; background: white; }
+    .card { box-shadow: none; border: 1px solid #ddd; break-inside: avoid; }
+    .section { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<header class="platform-nav-outer">
+  <div class="platform-nav-inner">
+    <div id="platform-nav-mount" data-active="report"></div>
+  </div>
+</header>
+<div class="subpage-with-nav">
+  <div class="subpage-wrap">
+    <a class="portal-back" href="../index.html">← 返回首页</a>
+    <div class="report-page-inner">
+
+<!-- HEADER -->
+<div class="report-header">
+  <h1>数控机床国产替代 · 五看三定战略分析报告</h1>
+  <div class="subtitle">北京京城机电控股有限责任公司</div>
+  <div class="meta">统一社会信用代码：911100006336862176 | 报告日期：2026年7月11日 | 内部战略参考</div>
+</div>
+
+<!-- EXECUTIVE SUMMARY -->
+<div class="exec-summary">
+  <h2>核心结论</h2>
+  <p>
+    京城机电正处于从<strong>"传统装备制造商"向"高端工业母机国家队"</strong>转型的关键窗口期。旗下北一机床已在高端五轴龙门、立式加工中心领域实现技术突破与批量订单落地，但整体仍面临三重挑战：<strong>上游数控系统/芯片等核心部件卡脖子、中低端市场同质化竞争加剧、集团数字化管理能力滞后于技术升级步伐</strong>。未来三年，应以"高端突破+数据驱动+生态协同"为核心战略主线，在航空航天、新能源汽车等高价值赛道建立差异化优势，同步推进集团级数据治理体系建设，将技术优势转化为可持续的市场竞争力与经营效益。
+  </p>
+</div>
+
+<!-- SECTION 1: 看行业 -->
+<div class="section">
+  <div class="section-title">一、看行业：数控机床国产替代进入深水区</div>
+  
+  <div class="grid-4">
+    <div class="card card-accent">
+      <div class="card-label">国内数控机床企业</div>
+      <div class="card-metric">6,912</div>
+      <div class="card-desc">多数定位中低端市场，高端产能不足</div>
+    </div>
+    <div class="card card-accent">
+      <div class="card-label">下游应用企业</div>
+      <div class="card-metric">568万+</div>
+      <div class="card-desc">覆盖汽车、航空、船舶、模具等核心领域</div>
+    </div>
+    <div class="card card-accent">
+      <div class="card-label">航空航天国产渗透率</div>
+      <div class="card-metric" style="color:var(--green-600)">30%</div>
+      <div class="card-desc">较2020年不足5%实现跨越式提升</div>
+    </div>
+    <div class="card card-accent">
+      <div class="card-label">精密模具国产渗透率</div>
+      <div class="card-metric" style="color:var(--green-600)">60%+</div>
+      <div class="card-desc">已具备国际竞争力，出口增长加速</div>
+    </div>
+  </div>
+
+  <div class="section-subtitle">产业链关键环节国产化现状</div>
+  <div class="card" style="margin-bottom:16px;">
+    <div class="bar-row">
+      <span class="bar-label">数控系统</span>
+      <div class="bar-track"><div class="bar-fill" style="width:18%;background:var(--red-600)"></div></div>
+      <span class="bar-val" style="color:var(--red-600)">18%</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">伺服电机</span>
+      <div class="bar-track"><div class="bar-fill" style="width:35%;background:var(--amber-600)"></div></div>
+      <span class="bar-val" style="color:var(--amber-600)">35%</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">光栅尺</span>
+      <div class="bar-track"><div class="bar-fill" style="width:12%;background:var(--red-600)"></div></div>
+      <span class="bar-val" style="color:var(--red-600)">12%</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">DSP芯片</span>
+      <div class="bar-track"><div class="bar-fill" style="width:8%;background:var(--red-600)"></div></div>
+      <span class="bar-val" style="color:var(--red-600)">8%</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">主轴/轴承</span>
+      <div class="bar-track"><div class="bar-fill" style="width:45%;background:var(--amber-600)"></div></div>
+      <span class="bar-val" style="color:var(--amber-600)">45%</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">整机装配</span>
+      <div class="bar-track"><div class="bar-fill" style="width:75%;background:var(--green-600)"></div></div>
+      <span class="bar-val" style="color:var(--green-600)">75%</span>
+    </div>
+    <div class="card-desc" style="margin-top:10px;">上游核心功能部件国产化率严重偏低，是制约高端机床自主可控的最大瓶颈。整机装配环节已具备较强能力，价值向上游延伸是必然路径。</div>
+  </div>
+
+  <div class="grid-2">
+    <div class="insight-box opportunity">
+      <div class="insight-title" style="color:var(--green-600)">政策红利持续释放</div>
+      <div class="insight-text">"十四五"规划、《中国制造2025》将高档数控机床列为十大重点领域之首。2026年国家重大专项持续加码，北京市对市属国企智能制造转型有专项补贴与考核要求。京城机电作为首都装备制造业龙头，享有政策优先支持地位。</div>
+    </div>
+    <div class="insight-box warning">
+      <div class="insight-title" style="color:var(--amber-600)">技术迭代加速带来不确定性</div>
+      <div class="insight-text">AI赋能加工、数字孪生、自适应补偿等新技术正重塑机床价值定义。若仅停留在硬件替代而忽视软件与算法能力建设，可能在新一轮竞争中再次落后。需同步布局"硬件+软件+服务"一体化能力。</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: 看市场 -->
+<div class="section">
+  <div class="section-title">二、看市场：高端替代空间巨大，结构性机会明确</div>
+  
+  <div class="section-subtitle">核心下游市场需求矩阵</div>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>应用领域</th>
+        <th>关联企业数</th>
+        <th>需求特征</th>
+        <th>国产替代紧迫度</th>
+        <th>京城机电匹配度</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>航空航天配件</strong></td>
+        <td>1,356家</td>
+        <td>五轴联动、高精度、钛合金加工</td>
+        <td style="color:var(--red-600);font-weight:600;">极高</td>
+        <td style="color:var(--green-600);font-weight:600;">高（重型龙门优势）</td>
+      </tr>
+      <tr>
+        <td><strong>汽车制造</strong></td>
+        <td>37,398家</td>
+        <td>高效批量、柔性产线、一体化压铸</td>
+        <td style="color:var(--amber-600);font-weight:600;">中高</td>
+        <td style="color:var(--amber-600);font-weight:600;">中（需提速降本）</td>
+      </tr>
+      <tr>
+        <td><strong>船舶与海工</strong></td>
+        <td>28,572家</td>
+        <td>大型构件、重载切削、耐腐蚀</td>
+        <td style="color:var(--red-600);font-weight:600;">极高</td>
+        <td style="color:var(--green-600);font-weight:600;">高（大件加工积淀）</td>
+      </tr>
+      <tr>
+        <td><strong>精密模具</strong></td>
+        <td>32,270家</td>
+        <td>高速高精、镜面加工、自动化</td>
+        <td style="color:var(--amber-600);font-weight:600;">中</td>
+        <td style="color:var(--amber-600);font-weight:600;">中（需补小型机短板）</td>
+      </tr>
+      <tr>
+        <td><strong>新能源装备</strong></td>
+        <td>快速增长</td>
+        <td>风电主轴、电池壳体、氢能容器</td>
+        <td style="color:var(--green-600);font-weight:600;">新兴增量</td>
+        <td style="color:var(--green-600);font-weight:600;">高（气体储运协同）</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="grid-3" style="margin-top:16px;">
+    <div class="card">
+      <div class="card-label">存量替换市场</div>
+      <div class="card-metric sm">~20万台</div>
+      <div class="card-desc">国内高端数控机床存量规模，当前国产占比不足10%，替换周期已启动</div>
+    </div>
+    <div class="card">
+      <div class="card-label">增量市场增速</div>
+      <div class="card-metric sm" style="color:var(--green-600)">15%+</div>
+      <div class="card-desc">航空航天、新能源汽车、人形机器人等新场景驱动年复合增长率</div>
+    </div>
+    <div class="card">
+      <div class="card-label">出海窗口期</div>
+      <div class="card-metric sm" style="color:var(--blue-600)">已开启</div>
+      <div class="card-desc">头部企业加速海外布局，东南亚、中东、东欧为优先目标市场</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: 看竞争 -->
+<div class="section">
+  <div class="section-title">三、看竞争：三层梯队格局清晰，差异化突围是关键</div>
+  
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>竞争梯队</th>
+        <th>代表企业</th>
+        <th>核心优势</th>
+        <th>主要短板</th>
+        <th>对京城机电的启示</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>国家队第一梯队</strong></td>
+        <td>通用技术集团（沈阳机床、大连机床）、科德数控</td>
+        <td>全产业链自主、国家专项主导、标准制定权、数控系统自研</td>
+        <td>市场化机制偏僵化、部分产品线历史包袱重</td>
+        <td>学习其产业链整合经验，避免重复投入；在细分领域建立局部优势</td>
+      </tr>
+      <tr>
+        <td><strong>民营龙头</strong></td>
+        <td>创世纪、海天精工、纽威数控</td>
+        <td>市场化机制灵活、中高端性价比突出、快速迭代响应、出海先行</td>
+        <td>核心技术深度有限、品牌溢价能力弱于外资</td>
+        <td>借鉴其市场化运营与客户服务模式；在重型机床领域保持技术壁垒</td>
+      </tr>
+      <tr>
+        <td><strong>外资巨头</strong></td>
+        <td>发那科、西门子、马扎克、DMG MORI</td>
+        <td>数控系统+整机生态闭环、全球品牌与服务网络、长期可靠性口碑</td>
+        <td>价格高、定制化响应慢、地缘政治风险上升</td>
+        <td>抓住国产替代窗口期，在客户最敏感的交期与服务上建立优势</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="insight-box" style="margin-top:16px;border-left-color:var(--blue-600);">
+    <div class="insight-title" style="color:var(--blue-800)">京城机电竞争定位：国家队第二梯队，细分领域领跑者</div>
+    <div class="insight-text">
+      整体体量与产业链完整度弱于通用技术集团，但在<strong>重型龙门五轴加工中心、大型铸锻件加工</strong>等细分市场已形成技术护城河。北一机床与清华大学联合研发数控系统，CCMT2026展会获行业认可并斩获批量订单，验证了产品力。需在保持细分优势的同时，补齐数控系统自主化、中小机型产品线、海外市场渠道三大短板。
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: 看自己 -->
+<div class="section">
+  <div class="section-title">四、看自己：资源禀赋与能力短板并存</div>
+  
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-label" style="color:var(--green-600)">核心优势</div>
+      <ul class="styled-list">
+        <li><strong>国企背景与政策支持：</strong>北京市政府授权资本经营平台，注册资本33.4亿元，享有国资改革、智能制造专项等多重政策红利</li>
+        <li><strong>北一机床技术积淀：</strong>六十余年机床制造经验，与清华大学联合攻关数控系统集成，高端五轴龙门实现自主突破</li>
+        <li><strong>产业生态完整：</strong>涵盖数控机床、气体储运、印刷机械、发电设备等多板块，内部协同与交叉销售潜力大</li>
+        <li><strong>首都区位与人才：</strong>依托北京高校与科研院所资源，产学研合作便利；2024年新设人才发展公司，强化人才储备</li>
+        <li><strong>品牌与信任基础：</strong>"北一"品牌在重型机床领域具有较高认知度，国企身份在军工、航天等敏感领域具备天然信任优势</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-label" style="color:var(--red-600)">关键短板</div>
+      <ul class="styled-list">
+        <li><strong>核心部件自主化不足：</strong>数控系统、光栅尺、高端轴承等仍依赖进口，供应链安全存在隐患，成本受制于人</li>
+        <li><strong>数字化管理能力滞后：</strong>集团215家关联企业数据孤岛严重，跨板块经营分析靠手工汇总，决策效率低</li>
+        <li><strong>产品线覆盖不全：</strong>擅长重型机床，但在中小型立式加工中心、车铣复合等走量机型上布局薄弱，错失中端市场</li>
+        <li><strong>市场化机制待激活：</strong>相比民企，激励机制、决策流程、客户响应速度仍有差距，影响市场竞争力</li>
+        <li><strong>国际化能力薄弱：</strong>海外市场几乎空白，缺乏本地化服务网络与国际认证体系，难以承接出海红利</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="grid-3" style="margin-top:16px;">
+    <div class="card card-accent">
+      <div class="card-label">集团关联企业</div>
+      <div class="card-metric">215家</div>
+      <div class="card-desc">大型企业集团，管控复杂度高</div>
+    </div>
+    <div class="card card-accent">
+      <div class="card-label">注册资本</div>
+      <div class="card-metric">33.4亿</div>
+      <div class="card-desc">国有独资，资本实力雄厚</div>
+    </div>
+    <div class="card card-accent">
+      <div class="card-label">上市公司</div>
+      <div class="card-metric">京城股份</div>
+      <div class="card-desc">600860.SH，聚焦气体储运+智能制造</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: 看机会 -->
+<div class="section">
+  <div class="section-title">五、看机会：四大战略突破口</div>
+  
+  <div class="grid-2">
+    <div class="card" style="border-top:3px solid var(--blue-600);">
+      <div class="card-label">机会一：高端五轴国产替代主战场</div>
+      <div class="card-desc" style="margin-bottom:8px;"><strong>逻辑：</strong>航空航天、船舶等领域国产渗透率仍低，客户对交期、服务、定制化的敏感度超过品牌溢价，正是国企发挥优势的窗口。</div>
+      <div class="card-desc"><strong>抓手：</strong>以北一机床重型五轴龙门为核心产品，联合清华深化数控系统自研，打造"整机+系统+工艺包"一体化解决方案。瞄准航天科技、中航工业等央企大客户，以标杆项目带动批量复制。</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--green-600);">
+      <div class="card-label">机会二：新能源装备跨界协同</div>
+      <div class="card-desc" style="margin-bottom:8px;"><strong>逻辑：</strong>氢能储罐、风电主轴、电池壳体等新能源部件加工需求爆发，且与京城机电气体储运板块形成天然协同。</div>
+      <div class="card-desc"><strong>抓手：</strong>打通气体储运客户资源与机床销售渠道，推出"储运装备+加工设备"组合方案。针对氢能容器内壁加工等特殊工艺，开发专用机床型号，建立细分标准。</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--purple-600);">
+      <div class="card-label">机会三：集团数字化管理升级</div>
+      <div class="card-desc" style="margin-bottom:8px;"><strong>逻辑：</strong>215家企业数据孤岛导致经营决策滞后，国资委对国企数字化转型有明确考核要求，数据治理已从"可选项"变为"必答题"。</div>
+      <div class="card-desc"><strong>抓手：</strong>建设集团级数据中台，统一主数据标准，打通ERP/MES/PLM等核心系统。先以北一机床为试点，验证研发项目管理、供应链风险预警、售后服务数字化等场景，再向全集团推广。</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--teal-600);">
+      <div class="card-label">机会四：智能制造服务化转型</div>
+      <div class="card-desc" style="margin-bottom:8px;"><strong>逻辑：</strong>机床行业正从"卖设备"向"卖能力"转型，远程运维、工艺优化、产能共享等服务收入占比持续提升，是平滑周期波动的关键。</div>
+      <div class="card-desc"><strong>抓手：</strong>基于已售设备加装传感器与物联网模块，构建远程诊断与预测性维护平台。联合下游客户共建工艺数据库，提供"设备+工艺+数据"增值服务，探索按加工时长或产出计费的商业模式。</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 6: 三定 -->
+<div class="section">
+  <div class="section-title">六、三定：定目标、定策略、定路径</div>
+  
+  <!-- 定目标 -->
+  <div class="section-subtitle">6.1 定目标</div>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>目标层级</th>
+        <th>具体目标</th>
+        <th>衡量指标</th>
+        <th>时间节点</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>战略目标</strong></td>
+        <td>成为国内高端数控机床第一梯队，具备数控系统自主化能力与全球化服务能力</td>
+        <td>高端五轴市场占有率进入前三；数控系统自研装机率超40%；海外收入占比超10%</td>
+        <td>2030年</td>
+      </tr>
+      <tr>
+        <td><strong>阶段目标（三年）</strong></td>
+        <td>完成高端产品线补齐与数字化底座建设，实现从"单点突破"到"体系作战"的转变</td>
+        <td>数控机床板块营收翻番；集团数据中台上线；新增2个海外服务网点</td>
+        <td>2028年</td>
+      </tr>
+      <tr>
+        <td><strong>年度目标（Y1）</strong></td>
+        <td>巩固重型五轴优势，启动数字化试点，打通新能源协同首单</td>
+        <td>高端机床订单增长20%；北一机床数据治理POC完成；氢能装备加工方案签约</td>
+        <td>2026年底</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 定策略 -->
+  <div class="section-subtitle">6.2 定策略</div>
+  <div class="grid-2">
+    <div class="card card-accent">
+      <div class="card-label">产品策略：高端引领 + 中端补位</div>
+      <ul class="styled-list">
+        <li>持续深耕重型五轴龙门，保持细分领域技术领先，打造国家级单项冠军产品</li>
+        <li>加快中型立式加工中心、车铣复合机型研发，填补产品线空白，争夺走量市场</li>
+        <li>加速数控系统自研迭代，三年内实现主力机型标配自研系统，降低外采依赖</li>
+        <li>开发新能源、人形机器人等新兴场景专用机型，抢占增量市场先机</li>
+      </ul>
+    </div>
+    <div class="card card-accent">
+      <div class="card-label">市场策略：聚焦高价值 + 出海试水</div>
+      <ul class="styled-list">
+        <li>国内市场聚焦航空航天、船舶、能源三大高价值赛道，集中资源打标杆项目</li>
+        <li>建立大客户专属服务团队，提供"售前工艺方案+售中交付保障+售后远程运维"全周期服务</li>
+        <li>海外市场优先布局东南亚（越南、印尼）与东欧（匈牙利、波兰），通过代理商模式轻资产切入</li>
+        <li>参加EMO、IMTS等国际顶级展会，提升品牌国际曝光度</li>
+      </ul>
+    </div>
+    <div class="card card-accent">
+      <div class="card-label">技术策略：自主攻坚 + 开放协同</div>
+      <ul class="styled-list">
+        <li>数控系统：深化与清华合作，组建专职研发团队，三年内完成V2.0版本量产验证</li>
+        <li>核心部件：联合国内光栅尺、轴承龙头企业共建联合实验室，推动国产化验证</li>
+        <li>软件算法：引入AI自适应加工、数字孪生等技术，提升机床智能化水平</li>
+        <li>标准制定：积极参与国家标准委高端机床标准制修订，争取话语权</li>
+      </ul>
+    </div>
+    <div class="card card-accent">
+      <div class="card-label">组织策略：机制激活 + 人才强基</div>
+      <ul class="styled-list">
+        <li>在北一机床试点市场化激励机制，核心技术骨干实施项目分红或跟投</li>
+        <li>依托新设人才发展公司，与北航、北理工共建定向培养班，锁定应届生优质生源</li>
+        <li>设立海外人才引进专项，吸引具有发那科、西门子等企业经验的资深工程师</li>
+        <li>推动集团总部职能精简，赋予业务单元更大经营自主权，提升决策效率</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 定路径 -->
+  <div class="section-subtitle">6.3 定路径：三年执行路线图</div>
+  <div class="timeline">
+    <div class="timeline-phase" style="background:var(--blue-50);">
+      <div class="timeline-label" style="color:var(--blue-800)">Y1 夯基</div>
+      <div class="timeline-time" style="color:var(--blue-600)">2026.7 - 2027.6</div>
+      <div class="timeline-desc" style="color:var(--blue-800)">
+        重型五轴订单+20%<br/>
+        数控系统V1.5小批验证<br/>
+        北一数据治理POC<br/>
+        氢能加工方案首签<br/>
+        东南亚代理渠道搭建
+      </div>
+    </div>
+    <div class="timeline-phase" style="background:var(--teal-50);">
+      <div class="timeline-label" style="color:var(--teal-800)">Y2 突破</div>
+      <div class="timeline-time" style="color:var(--teal-600)">2027.7 - 2028.6</div>
+      <div class="timeline-desc" style="color:var(--teal-800)">
+        中型立加量产上市<br/>
+        数控系统V2.0量产<br/>
+        集团数据中台上线<br/>
+        首个海外服务网点<br/>
+        AI加工算法Beta版
+      </div>
+    </div>
+    <div class="timeline-phase" style="background:var(--green-50);">
+      <div class="timeline-label" style="color:var(--green-800)">Y3 跃升</div>
+      <div class="timeline-time" style="color:var(--green-600)">2028.7 - 2029.6</div>
+      <div class="timeline-desc" style="color:var(--green-800)">
+        高端市占率进前三<br/>
+        自研系统装机率40%<br/>
+        服务收入占比15%<br/>
+        第二海外网点运营<br/>
+        数字孪生平台商用
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 7: 风险与应对 -->
+<div class="section">
+  <div class="section-title">七、关键风险与应对预案</div>
+  
+  <div class="grid-2">
+    <div class="insight-box risk">
+      <div class="insight-title" style="color:var(--red-600)">风险一：核心部件断供</div>
+      <div class="insight-text"><strong>情景：</strong>地缘政治恶化导致数控系统、光栅尺等进口部件断供。<br/><strong>应对：</strong>建立6个月战略储备库存；加速国产替代验证，与国内供应商签订保供协议；推动数控系统自研进度列为集团一号工程。</div>
+    </div>
+    <div class="insight-box risk">
+      <div class="insight-title" style="color:var(--red-600)">风险二：技术路线误判</div>
+      <div class="insight-text"><strong>情景：</strong>AI加工、直驱技术等新技术路线颠覆现有产品架构。<br/><strong>应对：</strong>设立前沿技术跟踪小组，每季度输出技术趋势研判；与高校共建预研项目，保持多技术路线并行探索；预留营收3%作为创新基金。</div>
+    </div>
+    <div class="insight-box warning">
+      <div class="insight-title" style="color:var(--amber-600)">风险三：人才流失</div>
+      <div class="insight-text"><strong>情景：</strong>民企与外企高薪挖角，核心研发人员流失。<br/><strong>应对：</strong>试点项目分红与股权激励；打通技术序列晋升通道；营造工程师文化，强化使命感与归属感。</div>
+    </div>
+    <div class="insight-box warning">
+      <div class="insight-title" style="color:var(--amber-600)">风险四：数字化转型不及预期</div>
+      <div class="insight-text"><strong>情景：</strong>数据治理阻力大、系统对接困难、业务部门配合度低。<br/><strong>应对：</strong>一把手挂帅数字化委员会；选择痛点最明显的场景做速赢项目；建立数据质量考核机制，纳入部门负责人KPI。</div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="report-footer">
+  本报告基于公开信息与企业内部数据编制，仅供战略规划参考 | 北京京城机电控股有限责任公司 | 2026年7月
+</div>
+
+    </div>
+  </div>
+</div>
+<script src="../assets/subpage-nav.js"></script>
+</body>
+</html>
