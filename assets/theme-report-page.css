@@ -227,6 +227,25 @@
   opacity: 1;
 }
 
+/* 子页 · 逐条详情列表（无侧边目录） */
+.theme-report-body-full {
+  display: block;
+}
+
+.theme-report-body-full .report-detail-panel {
+  width: 100%;
+  max-width: none;
+}
+
+.theme-report-body .subpage-content.report-detail-panel {
+  background: #fff;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 8px 20px 16px;
+  min-height: auto;
+}
+
 @media (max-width: 900px) {
   .subpage-body {
     flex-direction: column;

@@ -6,6 +6,7 @@
 <title>主题报告 - 京城机电产业研究与市场分析平台</title>
 <link rel="stylesheet" href="../assets/subpage-layout.css">
 <link rel="stylesheet" href="../assets/subpage-nav.css">
+<link rel="stylesheet" href="../assets/entry-list.css">
 <link rel="stylesheet" href="../assets/theme-report-page.css">
 </head>
 <body>
@@ -19,15 +20,14 @@
     <header class="subpage-header theme-report-header">
       <div class="subpage-header-text">
         <h1>主题报告</h1>
-        <p>左侧选择报告条目，右侧在线预览全文；未上传文档点击后提示「暂未上传」。</p>
+        <p>机电院专题研究成果汇总，按标题、时间与摘要逐条展示；未上传文档点击链接后提示「未上传」。</p>
       </div>
       <button type="button" class="theme-report-upload" id="report-upload-btn">上传文档</button>
       <input type="file" id="report-upload-input" hidden accept=".pdf,.doc,.docx,.html,.htm,.md">
     </header>
 
-    <div class="subpage-body">
-      <nav class="subpage-sidebar" id="report-list" aria-label="主题报告列表"></nav>
-      <main class="subpage-content report-preview-panel" id="report-preview" aria-live="polite"></main>
+    <div class="subpage-body theme-report-body theme-report-body-full">
+      <main class="subpage-content report-detail-panel" id="report-detail-list" aria-live="polite"></main>
     </div>
 
     <footer class="subpage-footer">京城机电产业研究与市场分析平台 · 主题报告</footer>
@@ -40,11 +40,9 @@
 <script>
 (function(){
   var reports = (window.DEMO_DATA && window.DEMO_DATA.recommendedReports) || [];
-  var listEl = document.getElementById('report-list');
-  var previewEl = document.getElementById('report-preview');
+  var detailEl = document.getElementById('report-detail-list');
   var toastEl = document.getElementById('report-toast');
   var toastTimer;
-  var activeId = null;
 
   function esc(s){
     if(s == null) return '';
@@ -65,13 +63,6 @@
     }, 2200);
   }
 
-  function getReport(id){
-    for(var i = 0; i < reports.length; i++){
-      if(String(reports[i].id) === String(id)) return reports[i];
-    }
-    return reports[0] || null;
-  }
-
   function resolveReportUrl(url){
     if(!url || !String(url).trim()) return '';
     var href = String(url).trim();
@@ -81,69 +72,34 @@
     return href;
   }
 
-  function renderList(){
-    if(!listEl) return;
-    listEl.innerHTML = reports.map(function(r){
-      var active = String(r.id) === String(activeId) ? ' active' : '';
-      return '<button type="button" class="report-list-item' + active + '" data-id="' + r.id + '">' +
-        '<div class="item-title">' + esc(r.title) + '</div>' +
-        '<div class="item-meta">' +
-          '<span class="item-tag">' + esc(r.author || '—') + '</span>' +
-          '<span class="item-tag date">' + esc(r.date) + '</span>' +
-        '</div></button>';
-    }).join('');
+  function renderEntryLink(text, href, onMissing){
+    if(href){
+      return '<a class="entry-link" href="' + esc(href) + '" target="_blank" rel="noopener">' + esc(text) + '</a>';
+    }
+    return '<button type="button" class="entry-link entry-link-btn">' + esc(text) + '</button>';
+  }
 
-    listEl.querySelectorAll('.report-list-item').forEach(function(btn){
+  function renderDetails(){
+    if(!detailEl) return;
+    detailEl.innerHTML = '<div class="entry-list">' + reports.map(function(r){
+      var href = resolveReportUrl(r.url);
+      var linkHtml = renderEntryLink(r.title, href);
+      return '<article class="entry-item" id="report-' + r.id + '">' +
+        '<div class="entry-head"><strong class="entry-title">' + esc(r.title) + '</strong>' +
+        '<span class="entry-dot"> · </span><span class="entry-date">' + esc(r.date) + '</span></div>' +
+        '<p class="entry-summary">' + esc(r.summary || '—') + '</p>' +
+        linkHtml +
+      '</article>';
+    }).join('') + '</div>';
+
+    detailEl.querySelectorAll('.entry-link-btn').forEach(function(btn){
       btn.addEventListener('click', function(){
-        selectReport(btn.dataset.id, true);
+        showToast('未上传');
       });
     });
   }
 
-  function renderPreview(report, showPendingToast){
-    if(!previewEl || !report) return;
-    var previewUrl = resolveReportUrl(report.url);
-    var hasUrl = !!previewUrl;
-    var head = '<div class="report-preview-head">' +
-      '<h2>' + esc(report.title) + '</h2>' +
-      '<span class="report-preview-meta">' + esc(report.author || '—') + ' · ' + esc(report.date) + '</span>';
-
-    if(hasUrl){
-      head += '<a class="report-preview-open" href="' + esc(previewUrl) + '" target="_blank" rel="noopener">新窗口打开</a>';
-    }
-    head += '</div>';
-
-    var body;
-    if(hasUrl){
-      body = '<div class="report-preview-body">' +
-        '<iframe class="report-preview-frame" title="' + esc(report.title) + '" src="' + esc(previewUrl) + '"></iframe>' +
-        '</div>';
-    } else {
-      body = '<div class="report-preview-body">' +
-        '<div class="report-preview-empty">' +
-          '<div class="empty-icon">📄</div>' +
-          '<h3>暂未上传</h3>' +
-          '<p>该报告尚未上传至平台，请通过「上传文档」补充后预览。</p>' +
-        '</div></div>';
-      if(showPendingToast) showToast('暂未上传');
-    }
-
-    previewEl.innerHTML = head + body;
-  }
-
-  function selectReport(id, showPendingToast){
-    activeId = id;
-    renderList();
-    renderPreview(getReport(id), showPendingToast);
-    var params = new URLSearchParams(window.location.search);
-    params.set('id', id);
-    history.replaceState(null, '', '?' + params.toString());
-  }
-
-  var params = new URLSearchParams(window.location.search);
-  var initialId = params.get('id');
-  if(!getReport(initialId) && reports.length) initialId = reports[0].id;
-  if(initialId) selectReport(initialId, false);
+  renderDetails();
 
   var uploadBtn = document.getElementById('report-upload-btn');
   var uploadInput = document.getElementById('report-upload-input');

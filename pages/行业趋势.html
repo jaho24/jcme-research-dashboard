@@ -32,6 +32,7 @@
       <div class="nav-group-label">数据目录</div>
       <button type="button" class="nav-item active" data-view="overview">数据定义 / 首页概览</button>
       <button type="button" class="nav-item" data-view="chain">产业链图谱</button>
+      <button type="button" class="nav-item" data-view="shipment">年度出货量</button>
       <button type="button" class="nav-item" data-view="finance">上市公司财务数据</button>
       <button type="button" class="nav-item" data-view="hotspot">近期热点</button>
       <div class="nav-group-label" id="report-nav-group">深度报告</div>
@@ -48,11 +49,13 @@
 <script src="../assets/subpage-nav.js"></script>
 <script src="../assets/demo-data.js"></script>
 <script src="../assets/trend-finance-data.js"></script>
+<script src="../assets/trend-shipment-data.js"></script>
 <script src="../assets/industry-chain-data.js"></script>
 <script>
 (function(){
   var D = window.DEMO_DATA;
   var FIN = window.TREND_FINANCE_DATA;
+  var SHIP = window.TREND_SHIPMENT_DATA;
   var CHAIN = window.INDUSTRY_CHAIN_DATA;
   var contentEl = document.getElementById('content');
   var state = { industry: 'robot', view: 'overview', period: 'annual', metric: 'revenue', hideValues: false, chainNode: null };
@@ -130,6 +133,44 @@
 
   function fmtFinanceNum(n){
     return Number(n).toLocaleString('zh-CN');
+  }
+
+  function fmtShipmentVal(v){
+    if(v === '—' || v == null) return '—';
+    return typeof v === 'number' ? v.toLocaleString('zh-CN') : v;
+  }
+
+  function renderShipmentTable(years, rows, mode, unit){
+    var head, body;
+    if(mode === 'vendor'){
+      head = '<th class="col-idx">序号</th><th>指标名称</th>';
+      years.forEach(function(y){ head += '<th class="num">' + y + '</th>'; });
+      body = rows.map(function(row, i){
+        var cls = row.isTotal ? ' class="total-row"' : (row.highlight ? ' class="row-highlight"' : '');
+        var cells = '<td class="col-idx">' + (row.isTotal ? '—' : (i + 1)) + '</td>' +
+          '<td class="row-name">' + row.name + '</td>';
+        row.values.forEach(function(v){
+          cells += '<td class="num">' + fmtShipmentVal(v) + '</td>';
+        });
+        return '<tr' + cls + '>' + cells + '</tr>';
+      }).join('');
+    } else {
+      head = '<th class="col-idx">序号</th><th>产品分类</th><th>数据类型</th>';
+      years.forEach(function(y){ head += '<th class="num">' + y + '</th>'; });
+      head += '<th>计量单位</th>';
+      body = rows.map(function(row, i){
+        var cls = row.highlight ? ' class="row-highlight"' : '';
+        var cells = '<td class="col-idx">' + (i + 1) + '</td>' +
+          '<td>' + row.category + '</td>' +
+          '<td>' + row.dataType + '</td>';
+        row.values.forEach(function(v){
+          cells += '<td class="num">' + fmtShipmentVal(v) + '</td>';
+        });
+        cells += '<td>' + (row.unit || unit || '台') + '</td>';
+        return '<tr' + cls + '>' + cells + '</tr>';
+      }).join('');
+    }
+    return '<table class="shipment-table"><thead><tr>' + head + '</tr></thead><tbody>' + body + '</tbody></table>';
   }
 
   function renderFinanceTable(years, rows){
@@ -285,6 +326,65 @@
     '</div>';
   }
 
+  function renderShipment(industry){
+    var ship = SHIP[industry];
+    var indLabel = INDUSTRIES[industry].label;
+    var years = ship.years;
+    var rows = ship.rows;
+    var mode = ship.tableMode || 'category';
+    var unit = ship.unit || '台';
+    var tableTitle = mode === 'vendor' ? '主要厂商出货量' : '产品分类出货量';
+    var chartTitle = mode === 'vendor' ? 'TOP5 厂商出货量对比' : '总体出货量趋势';
+    var chartHtml = '';
+    var legend = '';
+
+    if(mode === 'vendor' && ship.chartSeries && ship.chartSeries.length){
+      chartHtml = renderGroupedBarChart(years, ship.chartSeries);
+      legend = ship.chartSeries.map(function(r){
+        return '<span class="finance-legend-item"><i style="background:' + r.color + '"></i>' + r.name + '</span>';
+      }).join('');
+    } else {
+      var totalRow = rows.find(function(r){ return r.highlight; });
+      chartHtml = totalRow
+        ? renderLineChart(years, totalRow.values.map(function(v){ return typeof v === 'number' ? v : 0; }), '#2563eb')
+        : '';
+      if(totalRow){
+        legend = '<span class="finance-legend-item"><i style="background:#2563eb"></i>' +
+          (totalRow.name || totalRow.category) + '</span>';
+      }
+    }
+
+    return '<div class="shipment-view">' +
+      '<div class="content-title">' + indLabel + ' — 年度出货量</div>' +
+      '<div class="content-meta"><span class="tag tag-blue">' + indLabel + '</span><span class="content-date">来源：' + ship.source + '</span></div>' +
+      '<div class="data-desc shipment-desc">' + ship.description + ' 数据来源：' + ship.source + ' · 单位：' + unit + '。</div>' +
+      '<div class="finance-split">' +
+        '<div class="finance-panel">' +
+          '<div class="finance-panel-head">' +
+            '<div><h3>' + tableTitle + '</h3>' +
+            '<div class="finance-panel-sub">数据来源：' + ship.source + ' · 单位：' + unit + '</div></div>' +
+            '<div class="finance-toolbar">' +
+              '<button type="button" class="finance-btn-export" disabled title="Demo 环境暂不支持导出">数据导出</button>' +
+            '</div>' +
+          '</div>' +
+          '<div class="finance-panel-body">' + renderShipmentTable(years, rows, mode, unit) + '</div>' +
+          '<div class="finance-table-foot"><span>共 ' + rows.length + ' 条</span><span class="finance-pagination">‹ 1 ›</span></div>' +
+        '</div>' +
+        '<div class="finance-panel">' +
+          '<div class="finance-panel-head">' +
+            '<div><h3>' + chartTitle + '</h3>' +
+            '<div class="finance-panel-sub">数据来源：' + ship.source + ' · 单位：' + unit + '</div></div>' +
+          '</div>' +
+          '<div class="finance-panel-body finance-chart-body">' + chartHtml +
+            (legend ? '<div class="finance-legend">' + legend + '</div>' : '') +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<p class="shipment-source-note">' + ship.sourceNote + '</p>' +
+      '<p class="finance-footnote">' + indLabel + ' · 年度出货量汇总 · ' + ship.source + '</p>' +
+    '</div>';
+  }
+
   function renderChainNodeItems(nodes, side){
     return nodes.map(function(n, i){
       var key = side + '-' + i;
@@ -402,6 +502,7 @@
     var html = '';
     switch(state.view){
       case 'overview': html = renderOverview(state.industry); break;
+      case 'shipment': html = renderShipment(state.industry); break;
       case 'finance': html = renderFinance(state.industry); break;
       case 'chain': html = renderChain(state.industry); break;
       case 'hotspot': html = renderHotspot(state.industry); break;
@@ -503,7 +604,8 @@
 
   function setView(view){
     state.view = view;
-    if(view !== 'finance'){ state.period = 'annual'; state.metric = 'revenue'; state.hideValues = false; }
+    if(view !== 'finance'){ state.period = 'annual'; state.metric = 'revenue'; }
+    if(view !== 'finance' && view !== 'shipment') state.hideValues = false;
     if(view !== 'chain') state.chainNode = null;
     syncUI();
     render();
@@ -522,7 +624,7 @@
   var view = params.get('view');
   if(ind === 'robot' || ind === 'machine') state.industry = ind;
   if(view === 'market') view = 'finance';
-  if(['overview', 'finance', 'chain', 'hotspot'].indexOf(view) >= 0) state.view = view;
+  if(['overview', 'finance', 'chain', 'shipment', 'hotspot'].indexOf(view) >= 0) state.view = view;
   syncUI();
   render();
 })();

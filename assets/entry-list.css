@@ -1,0 +1,103 @@
+/* 通用条目排版：标题 · 时间 / 一句话总结 / 链接 */
+.entry-list {
+  list-style: none;
+}
+
+.entry-item {
+  padding: 14px 0;
+  border-bottom: 1px dashed var(--slate-200);
+}
+
+.entry-item:last-child {
+  border-bottom: none;
+}
+
+.entry-head {
+  font-size: 14px;
+  line-height: 1.55;
+  margin-bottom: 6px;
+}
+
+.entry-title {
+  font-weight: 700;
+  color: var(--slate-900);
+}
+
+.entry-dot {
+  color: var(--slate-300);
+  margin: 0 2px;
+}
+
+.entry-date {
+  color: var(--slate-400);
+  font-size: 13px;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+}
+
+.entry-summary {
+  font-size: 13px;
+  color: var(--slate-700);
+  line-height: 1.75;
+  margin: 0 0 8px;
+}
+
+.entry-link,
+.entry-link-btn {
+  display: inline;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--blue-600);
+  text-decoration: none;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+}
+
+.entry-link:hover,
+.entry-link-btn:hover {
+  color: var(--blue-700);
+  text-decoration: underline;
+}
+
+.entry-list-panel {
+  padding: 4px 20px 20px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.entry-list-panel .entry-item:first-child {
+  padding-top: 8px;
+}
+
+.entry-item.is-flash {
+  background: var(--blue-50);
+  margin: 0 -8px;
+  padding-left: 8px;
+  padding-right: 8px;
+  border-radius: 6px;
+}
+
+.report-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 32px;
+  transform: translateX(-50%);
+  background: var(--slate-800);
+  color: #fff;
+  font-size: 13px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.2);
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.report-toast.is-show {
+  opacity: 1;
+}

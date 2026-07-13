@@ -1,4 +1,4 @@
-/* 行业趋势子页专用样式 | 上市公司财务数据 + 产业链图谱 */
+/* 行业趋势子页专用样式 | 年度出货量 + 上市公司财务数据 + 产业链图谱 */
 
 /* 左侧行业切换 */
 .sidebar-industry-switch {
@@ -782,4 +782,63 @@
 @media (max-width: 640px) {
   .finance-toolbar { flex-direction: column; align-items: stretch; }
   .finance-select { max-width: none; }
+}
+
+/* 年度出货量 */
+.shipment-view { margin-top: -4px; }
+.shipment-desc { margin-bottom: 14px; }
+.shipment-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  min-width: 680px;
+}
+.shipment-table th,
+.shipment-table td {
+  padding: 7px 8px;
+  border: 1px solid var(--slate-200);
+  text-align: center;
+  white-space: nowrap;
+}
+.shipment-table th {
+  font-weight: 600;
+  color: var(--slate-700);
+  background: var(--slate-50);
+  font-size: 10px;
+}
+.shipment-table td.num {
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 10px;
+}
+.shipment-table .col-idx {
+  width: 40px;
+  color: var(--slate-500);
+}
+.shipment-table tr.row-highlight td {
+  background: #fffbeb;
+  font-weight: 600;
+}
+.shipment-table tr.row-highlight td:nth-child(2),
+.shipment-table tr.row-highlight td.row-name {
+  color: var(--blue-700);
+}
+.shipment-table tr.total-row td {
+  font-weight: 700;
+  color: var(--slate-800);
+  background: #f8fafc;
+}
+.shipment-table tr.total-row td.row-name {
+  color: var(--slate-700);
+}
+.shipment-table tr:hover td { background: var(--blue-50); }
+.shipment-table tr.row-highlight:hover td { background: #fef3c7; }
+.shipment-table tr.total-row:hover td { background: #f1f5f9; }
+.shipment-table .row-name {
+  font-weight: 500;
+  text-align: left;
+}
+.shipment-source-note {
+  font-size: 12px;
+  color: var(--slate-500);
+  margin: 0 0 8px;
 }
