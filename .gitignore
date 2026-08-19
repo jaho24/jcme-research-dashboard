@@ -1,0 +1,7 @@
+node_modules/
+opencode.json
+.env
+.env.*
+*.pem
+credentials.json
+secrets.json

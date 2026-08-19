@@ -19,7 +19,7 @@
   <div class="subpage-wrap">
   <header class="subpage-header">
     <h1>行业趋势分析 <span class="subpage-badge">MOSS数据</span></h1>
-    <p>聚焦工业机器人与数控机床两大赛道，汇总市场规模、产业链节点与政策热点，辅助战略研判。</p>
+    <p>聚焦工业机器人与数控机床两大赛道，汇总市场规模、产业链节点与上市公司财务等指标，辅助战略研判。</p>
   </header>
 
   <div class="subpage-body">
@@ -29,14 +29,13 @@
         <button type="button" class="industry-btn" data-industry="machine">数控机床</button>
       </div>
       <div class="sidebar-industry-title" id="sidebar-title">工业机器人</div>
-      <div class="nav-group-label">数据目录</div>
-      <button type="button" class="nav-item active" data-view="overview">数据定义 / 首页概览</button>
+      <button type="button" class="nav-item active" data-view="overview">首页概览</button>
       <button type="button" class="nav-item" data-view="chain">产业链图谱</button>
       <button type="button" class="nav-item" data-view="shipment">年度出货量</button>
       <button type="button" class="nav-item" data-view="finance">上市公司财务数据</button>
-      <button type="button" class="nav-item" data-view="hotspot">近期热点</button>
-      <div class="nav-group-label" id="report-nav-group">深度报告</div>
-      <a class="nav-item nav-item-link" id="robot-report-link" href="工业机器人行业战略洞察报告.html">工业机器人战略洞察报告</a>
+      <button type="button" class="nav-item" data-view="bidding">招投标分析</button>
+      <button type="button" class="nav-item" data-view="patent">专利分析</button>
+      <button type="button" class="nav-item" data-view="hiring">招聘分析</button>
     </nav>
 
     <main class="subpage-content" id="content" aria-live="polite"></main>
@@ -64,6 +63,13 @@
     robot: { label: '工业机器人', short: '机器人' },
     machine: { label: '数控机床', short: '机床' }
   };
+
+  var EMBED_BOARDS = {
+    bidding: { src: '../行业趋势/五轴机床市场竞争情报驾驶舱.html', title: '招投标分析' },
+    patent: { src: '../行业趋势/核心技术能力差距分析 (1).html', title: '专利分析' },
+    hiring: { src: '../行业趋势/竞对人才投入雷达.html', title: '招聘分析' }
+  };
+  var EMBED_VIEWS = ['bidding', 'patent', 'hiring'];
 
   function fmtNum(n){
     if(n >= 10000) return (n / 10000).toFixed(1) + '万';
@@ -237,18 +243,8 @@
       return '<tr><td>' + r.join('</td><td>') + '</td></tr>';
     }).join('');
     var globalTh = t.global.headers.map(function(h){ return '<th>' + h + '</th>'; }).join('');
-    var reportBanner = industry === 'robot'
-      ? '<div class="report-entry-banner">' +
-          '<div class="report-entry-text">' +
-            '<strong>战略洞察报告</strong>' +
-            '<p>完整版行业研究：市场格局、竞争态势、产业链自主化、具身智能与京城机电战略建议。</p>' +
-          '</div>' +
-          '<a class="report-entry-btn" href="工业机器人行业战略洞察报告.html">阅读全文 →</a>' +
-        '</div>'
-      : '';
     return '<div class="content-title">' + t.label + ' — 首页概览</div>' +
       '<div class="content-meta"><span class="tag tag-blue">' + t.label + '</span><span class="content-date">来源：' + t.source + '</span></div>' +
-      reportBanner +
       '<div class="insight-box"><strong>数据定义：</strong>' + t.definition + '</div>' +
       '<p class="content-summary">' + t.description + '</p>' +
       '<div class="kpi-row">' + kpis + '</div>' +
@@ -487,28 +483,28 @@
     '</div>';
   }
 
-  function renderHotspot(industry){
-    var hot = D.trendHotspots[industry];
-    var items = hot.map(function(h){
-      return '<li><span class="news-date">' + h.date + '</span><span class="tag tag-blue">' + h.tag + '</span><span>' + h.title + '</span></li>';
-    }).join('');
-    var label = INDUSTRIES[industry].label;
-    return '<div class="content-title">' + label + ' — 近期热点</div>' +
-      '<p class="content-summary">汇总' + label + '赛道近期市场动态、政策信号与技术突破，辅助快速把握行业脉搏。</p>' +
-      '<ul class="news-list">' + items + '</ul>';
+  function renderEmbed(view){
+    var board = EMBED_BOARDS[view];
+    if(!board) return '<div class="content-empty">看板不存在</div>';
+    return '<iframe class="trend-embed-frame" src="' + encodeURI(board.src) + '" title="' + board.title + '" loading="lazy"></iframe>';
   }
 
   function render(){
     var html = '';
+    var isEmbed = EMBED_VIEWS.indexOf(state.view) >= 0;
+    contentEl.classList.toggle('is-embed', isEmbed);
     switch(state.view){
       case 'overview': html = renderOverview(state.industry); break;
       case 'shipment': html = renderShipment(state.industry); break;
       case 'finance': html = renderFinance(state.industry); break;
       case 'chain': html = renderChain(state.industry); break;
-      case 'hotspot': html = renderHotspot(state.industry); break;
+      case 'bidding':
+      case 'patent':
+      case 'hiring':
+        html = renderEmbed(state.view); break;
     }
     contentEl.innerHTML = html;
-    bindContentEvents();
+    if(!isEmbed) bindContentEvents();
   }
 
   function showChainNode(nodeKey){
@@ -580,11 +576,6 @@
     document.querySelectorAll('#sidebar [data-view]').forEach(function(btn){
       btn.classList.toggle('active', btn.dataset.view === state.view);
     });
-    var reportGroup = document.getElementById('report-nav-group');
-    var reportLink = document.getElementById('robot-report-link');
-    var showReport = state.industry === 'robot';
-    if(reportGroup) reportGroup.hidden = !showReport;
-    if(reportLink) reportLink.hidden = !showReport;
   }
 
   function updateURL(){
@@ -624,7 +615,7 @@
   var view = params.get('view');
   if(ind === 'robot' || ind === 'machine') state.industry = ind;
   if(view === 'market') view = 'finance';
-  if(['overview', 'finance', 'chain', 'shipment', 'hotspot'].indexOf(view) >= 0) state.view = view;
+  if(['overview', 'finance', 'chain', 'shipment', 'bidding', 'patent', 'hiring'].indexOf(view) >= 0) state.view = view;
   syncUI();
   render();
 })();

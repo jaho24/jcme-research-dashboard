@@ -3,8 +3,8 @@
 /* 左侧行业切换 */
 .sidebar-industry-switch {
   display: flex;
-  gap: 4px;
-  padding: 0 10px 10px;
+  gap: 6px;
+  padding: 12px 12px 10px;
   border-bottom: 1px solid var(--slate-100);
 }
 .industry-btn {
@@ -529,6 +529,20 @@
 }
 .nav-item-link[hidden] { display: none; }
 .nav-group-label[hidden] { display: none; }
+
+.subpage-content.is-embed {
+  padding: 0;
+  overflow: hidden;
+  background: #fff;
+}
+.trend-embed-frame {
+  width: 100%;
+  height: calc(100vh - 140px);
+  min-height: 720px;
+  border: 0;
+  display: block;
+  background: #fff;
+}
 
 .report-entry-banner {
   display: flex;
